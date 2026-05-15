@@ -455,7 +455,11 @@ body::before {
 /* youtube */
 .card--youtube { padding: 0; overflow: hidden; }
 .yt { position: relative; aspect-ratio: 16 / 9; background: #000 center / cover no-repeat; cursor: pointer; display: block; }
-.yt::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.65) 100%); }
+.yt::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.65) 100%); pointer-events: none; }
+.yt.yt--playing { cursor: default; background: #000; }
+.yt.yt--playing::after,
+.yt.yt--playing .yt__play,
+.yt.yt--playing .yt__title { display: none; }
 .yt__play {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   width: 72px; height: 72px; border-radius: 50%;

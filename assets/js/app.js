@@ -188,12 +188,18 @@
 
   function attachYouTube(root) {
     const open = (fac) => {
+      const id = fac.dataset.yt;
+      if (!id) return;
       const iframe = document.createElement("iframe");
-      iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(fac.dataset.yt)}?autoplay=1&rel=0`;
-      iframe.allow = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
+      iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&controls=1`;
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
       iframe.allowFullscreen = true;
       iframe.title = fac.getAttribute("aria-label") || "YouTube video";
       fac.replaceChildren(iframe);
+      fac.classList.add("yt--playing");
+      fac.removeAttribute("data-yt");
+      fac.removeAttribute("role");
+      fac.removeAttribute("tabindex");
       fac.style.cursor = "default";
     };
     root.addEventListener("click", (e) => {
