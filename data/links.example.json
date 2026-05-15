@@ -17,8 +17,8 @@
       "kicker": "Where I live online",
       "items": [
         { "type": "link", "title": "Personal site", "url": "https://example.com", "description": "What I do, who I am" },
-        { "type": "link", "title": "Notes", "url": "https://notes.example.com", "description": "Long-form writing" },
-        { "type": "link", "title": "Lab",   "url": "https://lab.example.com",   "description": "Experiments & sketches" }
+        { "type": "link", "title": "Notes", "url": "https://notes.example.com", "description": "Long-form writing", "date": "2025-09" },
+        { "type": "link", "title": "Lab",   "url": "https://lab.example.com",   "description": "Experiments & sketches", "date": "2024" }
       ]
     },
     {
@@ -32,14 +32,16 @@
           "title": "Analytical Engine",
           "url": "https://example.com/projects/engine",
           "description": "An early proposal for a general-purpose computing machine, with looping and conditional branching.",
-          "tags": ["computing", "research"]
+          "tags": ["computing", "research"],
+          "date": "1837"
         },
         {
           "type": "card",
           "title": "Bernoulli Numbers",
           "url": "https://example.com/projects/bernoulli",
           "description": "Method for computing Bernoulli numbers using the Engine.",
-          "tags": ["mathematics"]
+          "tags": ["mathematics"],
+          "date": "1843-07"
         }
       ]
     },
@@ -53,7 +55,8 @@
           "title": "Notes G — diagrams for publication",
           "url": "https://example.com/showcase/notes-g",
           "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80",
-          "description": "Tables and diagrams prepared for the 1843 translation."
+          "description": "Tables and diagrams prepared for the 1843 translation.",
+          "date": "1843-10-15"
         }
       ]
     },

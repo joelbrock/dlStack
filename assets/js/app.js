@@ -38,7 +38,10 @@
         <span>
           <span class="card__title">${esc(it.title)}</span>
           ${it.description ? `<span class="card__desc">${esc(it.description)}</span>` : ""}
-          ${host ? `<span class="card__host">${esc(host)}</span>` : ""}
+          <span class="card__meta">
+            ${host ? `<span class="card__host">${esc(host)}</span>` : ""}
+            ${dateMarkup(it)}
+          </span>
         </span>
       </a>`;
   }
@@ -52,7 +55,7 @@
       <${tag} class="card card--project${featured} reveal" ${attrs}>
         <span class="card__title">${esc(it.title)}</span>
         ${it.description ? `<p class="card__desc">${esc(it.description)}</p>` : ""}
-        ${tags ? `<div class="tags">${tags}</div>` : ""}
+        ${(tags || it.date) ? `<div class="tags">${tags}${dateMarkup(it)}</div>` : ""}
       </${tag}>`;
   }
 
@@ -63,7 +66,7 @@
           <div class="yt__play" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
           </div>
-          <div class="yt__title">${esc(it.title)}</div>
+          <div class="yt__title">${esc(it.title)}${it.date ? ` <span class="yt__date">${esc(fmtDate(it.date))}</span>` : ""}</div>
         </div>
       </div>`;
   }
@@ -78,10 +81,11 @@
         <div class="portfolio__media"${ratio}>
           ${src ? `<img loading="lazy" alt="${esc(it.title || "")}" src="${esc(src)}">` : ""}
         </div>
-        ${(it.title || it.description) ? `
+        ${(it.title || it.description || it.date) ? `
         <div class="portfolio__caption">
           ${it.title ? `<span class="card__title">${esc(it.title)}</span>` : ""}
           ${it.description ? `<span class="card__desc">${esc(it.description)}</span>` : ""}
+          ${dateMarkup(it)}
         </div>` : ""}
       </${tag}>`;
   }
@@ -102,6 +106,7 @@
             : esc(initial)}
         </span>
         ${it.title ? `<span class="client__title">${esc(it.title)}</span>` : ""}
+        ${dateMarkup(it)}
       </${tag}>`;
   }
 
@@ -140,7 +145,8 @@
     rss:      '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3a16 16 0 0 1 16 16h-3A13 13 0 0 0 5 6V3Zm0 7a9 9 0 0 1 9 9h-3a6 6 0 0 0-6-6v-3Zm1.5 6a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z"/></svg>',
     link:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>',
     calendar: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days-icon lucide-calendar-days"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>',
-	bluesky: '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Bluesky</title><path d="M5.202 2.857C7.954 4.922 10.913 9.11 12 11.358c1.087-2.247 4.046-6.436 6.798-8.501C20.783 1.366 24 .213 24 3.883c0 .732-.42 6.156-.667 7.037-.856 3.061-3.978 3.842-6.755 3.37 4.854.826 6.089 3.562 3.422 6.299-5.065 5.196-7.28-1.304-7.847-2.97-.104-.305-.152-.448-.153-.327 0-.121-.05.022-.153.327-.568 1.666-2.782 8.166-7.847 2.97-2.667-2.737-1.432-5.473 3.422-6.3-2.777.473-5.899-.308-6.755-3.369C.42 10.04 0 4.615 0 3.883c0-3.67 3.217-2.517 5.202-1.026"/></svg>' 
+	  bluesky:  '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Bluesky</title><path d="M5.202 2.857C7.954 4.922 10.913 9.11 12 11.358c1.087-2.247 4.046-6.436 6.798-8.501C20.783 1.366 24 .213 24 3.883c0 .732-.42 6.156-.667 7.037-.856 3.061-3.978 3.842-6.755 3.37 4.854.826 6.089 3.562 3.422 6.299-5.065 5.196-7.28-1.304-7.847-2.97-.104-.305-.152-.448-.153-.327 0-.121-.05.022-.153.327-.568 1.666-2.782 8.166-7.847 2.97-2.667-2.737-1.432-5.473 3.422-6.3-2.777.473-5.899-.308-6.755-3.369C.42 10.04 0 4.615 0 3.883c0-3.67 3.217-2.517 5.202-1.026"/></svg>',
+    lastfm:   '<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Last.fm</title><path d="M10.584 17.21l-.88-2.392s-1.43 1.594-3.573 1.594c-1.897 0-3.244-1.649-3.244-4.288 0-3.382 1.704-4.591 3.381-4.591 2.42 0 3.189 1.567 3.849 3.574l.88 2.749c.88 2.666 2.529 4.81 7.285 4.81 3.409 0 5.718-1.044 5.718-3.793 0-2.227-1.265-3.381-3.63-3.931l-1.758-.385c-1.21-.275-1.567-.77-1.567-1.595 0-.934.742-1.484 1.952-1.484 1.32 0 2.034.495 2.144 1.677l2.749-.33c-.22-2.474-1.924-3.492-4.729-3.492-2.474 0-4.893.935-4.893 3.932 0 1.87.907 3.051 3.189 3.601l1.87.44c1.402.33 1.869.907 1.869 1.704 0 1.017-.99 1.43-2.86 1.43-2.776 0-3.93-1.457-4.59-3.464l-.907-2.75c-1.155-3.573-2.997-4.893-6.653-4.893C2.144 5.333 0 7.89 0 12.233c0 4.18 2.144 6.434 5.993 6.434 3.106 0 4.591-1.457 4.591-1.457z"/></svg>'
   };
 
   function renderSocial(items) {
@@ -152,10 +158,23 @@
   function nameMarkup(name) {
     if (!name) return "";
     const parts = String(name).trim().split(/\s+/);
-    if (parts.length < 2) return esc(name);
+    if (parts.length < 2) return `<span class="hero__name-first">${esc(name)}</span>`;
     const last = parts.pop();
-    return `${esc(parts.join(" "))} <em>${esc(last)}</em>`;
+    return `<span class="hero__name-first">${esc(parts.join(" "))}</span> <em>${esc(last)}</em>`;
   }
+
+  function fmtDate(d) {
+    if (!d) return "";
+    const m = String(d).match(/^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/);
+    if (!m) return String(d);
+    const [, y, mo, dd] = m;
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    if (dd && mo) return `${months[+mo - 1]} ${+dd}, ${y}`;
+    if (mo)       return `${months[+mo - 1]} ${y}`;
+    return y;
+  }
+  const dateMarkup = (it) =>
+    it.date ? `<time class="card__date" datetime="${esc(it.date)}">${esc(fmtDate(it.date))}</time>` : "";
 
   function attachFaviconFallback(root) {
     $$("img[data-fallback-initial]", root).forEach(img => {

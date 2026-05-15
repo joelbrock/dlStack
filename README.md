@@ -114,6 +114,37 @@ has `type: "client"`.
 Every item lives in a section's `items` array and has a `type` field. The
 five available types are documented below.
 
+#### Optional `date` (any item type)
+
+Every item type supports an optional `date` string. Use it to surface
+"published", "shipped", "released", or "worked on" timestamps without
+changing the item's `type`.
+
+Accepted formats (all ISO-style, all interpreted as plain strings — no
+time zones, no parsing surprises):
+
+| Input          | Rendered as            | Use for                            |
+|----------------|------------------------|------------------------------------|
+| `"2026"`       | `2026`                 | Year-only — "this is from 2026"     |
+| `"2026-05"`    | `May 2026`             | Year + month — soft / recurring     |
+| `"2026-05-14"` | `May 14, 2026`         | Full date — talks, launches, posts  |
+
+Where it appears per type:
+
+- **`link`** — small monospaced caption under the host (separated by a `·`).
+- **`card` (project)** — at the end of the tag row.
+- **`portfolio`** — under the caption description.
+- **`youtube`** — inline after the title overlay.
+- **`client`** — rendered as a small caption under the client title.
+
+The raw value is also written to the `<time datetime="…">` attribute so
+the original ISO string is preserved for machines and screen readers,
+even though humans see the friendly form.
+
+```json
+{ "type": "card", "title": "CoVote launched", "date": "2025-11-04" }
+```
+
 #### `type: "link"` — standard link card
 
 ```json

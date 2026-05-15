@@ -11,7 +11,7 @@
   --ink:       oklch(0.10 0 0);
   --ink-2:     oklch(0.18 0 0);
   --muted:     oklch(0.42 0 0);
-  --rule:      oklch(0.10 0 0);
+  --rule:      oklch(0.78 0 0);
   --accent:    #DC2127;
   --on-accent: oklch(0.99 0 0);
   --display:   "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -27,7 +27,7 @@
     --ink:       oklch(0.985 0 0);
     --ink-2:     oklch(0.92 0 0);
     --muted:     oklch(0.62 0 0);
-    --rule:      oklch(0.985 0 0);
+    --rule:      oklch(0.32 0 0);
   }
 }
 :root[data-template="swiss"][data-theme="dark"] {
@@ -36,7 +36,7 @@
   --ink:       oklch(0.985 0 0);
   --ink-2:     oklch(0.92 0 0);
   --muted:     oklch(0.62 0 0);
-  --rule:      oklch(0.985 0 0);
+  --rule:      oklch(0.32 0 0);
 }
 
 /* clean off the editorial paper grain */
@@ -44,7 +44,7 @@
 
 /* ───── marker bar ───── */
 :root[data-template="swiss"] .marker {
-  border-bottom: 2px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
   font-weight: 700;
   letter-spacing: 0.06em;
   color: var(--ink);
@@ -60,7 +60,7 @@
 :root[data-template="swiss"] .marker__year { color: var(--accent); }
 :root[data-template="swiss"] .theme {
   border-radius: 0;
-  border-color: var(--ink);
+  border-color: var(--rule);
   font-family: var(--display);
   font-weight: 700;
   text-transform: uppercase;
@@ -74,15 +74,22 @@
 :root[data-template="swiss"] .hero__name {
   font-family: var(--display);
   font-style: normal;
-  font-weight: 900;
+  font-weight: 700;
   font-variation-settings: normal;
-  text-transform: uppercase;
-  letter-spacing: -0.045em;
-  line-height: 0.84;
+  text-transform: none;
+  letter-spacing: -0.035em;
+  line-height: 0.86;
+}
+:root[data-template="swiss"] .hero__name .hero__name-first {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 0.78em;
+  letter-spacing: -0.025em;
+  color: var(--ink);
 }
 :root[data-template="swiss"] .hero__name em {
   font-style: normal;
-  font-weight: 900;
+  font-weight: 800;
   font-variation-settings: normal;
   color: var(--accent);
 }
@@ -122,8 +129,8 @@
 /* ───── social ───── */
 :root[data-template="swiss"] .social a {
   border-radius: 0;
-  border-color: var(--ink);
-  border-width: 1.5px;
+  border-color: var(--rule);
+  border-width: 1px;
   font-family: var(--display);
   font-weight: 700;
   text-transform: uppercase;
@@ -141,13 +148,15 @@
 
 /* ───── sections ───── */
 :root[data-template="swiss"] .section__head {
-  border-bottom: 4px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
   padding-bottom: 0.85rem;
 }
 :root[data-template="swiss"] .section__numwrap small {
   color: var(--ink);
   font-weight: 700;
+  font-style: normal;
   font-family: var(--display);
+  font-variation-settings: normal;
 }
 :root[data-template="swiss"] .section__num {
   font-family: var(--display);
@@ -160,9 +169,9 @@
 :root[data-template="swiss"] .section__title {
   font-family: var(--display);
   font-style: normal;
-  font-weight: 900;
+  font-weight: 800;
   font-variation-settings: normal;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: -0.025em;
   color: var(--ink);
 }
@@ -180,8 +189,8 @@
 /* ───── cards ───── */
 :root[data-template="swiss"] .card {
   border-radius: 0;
-  border-color: var(--ink);
-  background: var(--paper);
+  border: 0;
+  background: var(--paper-2);
   transition: background 200ms cubic-bezier(0.22, 1, 0.36, 1), color 200ms cubic-bezier(0.22, 1, 0.36, 1);
   isolation: isolate;
 }
@@ -190,7 +199,6 @@
   box-shadow: none;
   background: var(--ink);
   color: var(--paper);
-  border-color: var(--ink);
 }
 :root[data-template="swiss"] .card:hover .card__title,
 :root[data-template="swiss"] .card:hover .card__desc,
@@ -205,8 +213,8 @@
 :root[data-template="swiss"] .card__title {
   font-family: var(--display);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: -0.005em;
+  text-transform: none;
+  letter-spacing: -0.01em;
 }
 :root[data-template="swiss"] .card__desc {
   font-family: var(--body);
@@ -218,16 +226,25 @@
   font-weight: 600;
   letter-spacing: 0.08em;
 }
+:root[data-template="swiss"] .card__date {
+  font-family: var(--display);
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+:root[data-template="swiss"] .card:hover .card__date,
+:root[data-template="swiss"] .card:hover .card__host { color: var(--paper); }
+:root[data-template="swiss"] .card__meta .card__date::before { color: var(--accent); }
+:root[data-template="swiss"] .card:hover .card__meta .card__date::before { color: var(--paper); }
 
 /* link card favicon */
 :root[data-template="swiss"] .card--link .favicon {
   border-radius: 0;
-  border-color: var(--ink);
+  border: 0;
   background: var(--paper);
 }
 :root[data-template="swiss"] .card--link:hover .favicon {
   background: var(--paper);
-  border-color: var(--paper);
 }
 :root[data-template="swiss"] .card--link .favicon[data-fallback] {
   font-family: var(--display);
@@ -238,19 +255,20 @@
 /* project card */
 :root[data-template="swiss"] .card--project .card__title {
   font-family: var(--display);
-  font-weight: 900;
+  font-weight: 800;
   font-style: normal;
   font-variation-settings: normal;
-  text-transform: uppercase;
+  text-transform: none;
   font-size: var(--fs-lg);
-  line-height: 0.95;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
 }
 
 /* featured — solid red, white text, true poster */
 :root[data-template="swiss"] .card--featured {
   background: var(--accent);
   color: var(--on-accent);
-  border-color: var(--ink);
+  border: 0;
 }
 :root[data-template="swiss"] .card--featured:hover {
   background: var(--ink);
@@ -263,9 +281,11 @@
 }
 :root[data-template="swiss"] .card--featured .card__title {
   color: var(--on-accent);
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 800;
+  text-transform: none;
   font-size: clamp(1.95rem, 1.30rem + 1.8vw, 2.8rem);
+  letter-spacing: -0.025em;
+  line-height: 1;
 }
 :root[data-template="swiss"] .card--featured:hover .card__title,
 :root[data-template="swiss"] .card--featured:hover .card__desc { color: var(--paper); }
@@ -276,7 +296,7 @@
 /* tags — square, monoline, all caps */
 :root[data-template="swiss"] .tag {
   border-radius: 0;
-  border-color: var(--ink);
+  border: 0;
   background: var(--paper);
   font-family: var(--display);
   font-weight: 600;
@@ -287,7 +307,6 @@
 :root[data-template="swiss"] .card:hover .tag {
   background: var(--paper);
   color: var(--ink);
-  border-color: var(--paper);
 }
 :root[data-template="swiss"] .card--featured .tag {
   background: color-mix(in oklch, var(--on-accent) 14%, transparent);
@@ -303,7 +322,7 @@
 /* youtube */
 :root[data-template="swiss"] .card--youtube {
   border-radius: 0;
-  border-color: var(--ink);
+  border: 0;
 }
 :root[data-template="swiss"] .yt__play {
   border-radius: 0;
@@ -318,37 +337,40 @@
 :root[data-template="swiss"] .yt__title {
   font-family: var(--display);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  text-transform: none;
+  letter-spacing: -0.005em;
 }
 
 /* portfolio */
 :root[data-template="swiss"] .card--portfolio {
   border-radius: 0;
-  border-color: var(--ink);
+  border: 0;
 }
-:root[data-template="swiss"] .card--portfolio:hover { background: var(--paper); color: var(--ink); }
+:root[data-template="swiss"] .card--portfolio:hover { background: var(--paper-2); color: var(--ink); }
 :root[data-template="swiss"] .card--portfolio:hover .portfolio__caption .card__title { color: var(--accent); }
+:root[data-template="swiss"] .card--portfolio:hover .card__desc,
+:root[data-template="swiss"] .card--portfolio:hover .card__date,
+:root[data-template="swiss"] .card--portfolio:hover .card__host { color: var(--muted); }
 :root[data-template="swiss"] .portfolio__caption {
-  border-top: 2px solid var(--ink);
+  border-top: 0;
   padding: 1.1rem 1.35rem 1.2rem;
 }
 :root[data-template="swiss"] .portfolio__caption .card__title {
   font-family: var(--display);
-  font-weight: 900;
+  font-weight: 800;
   font-variation-settings: normal;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: -0.02em;
   font-size: var(--fs-lg);
-  line-height: 1;
+  line-height: 1.05;
 }
 :root[data-template="swiss"] .portfolio__caption .card__desc { color: var(--muted); }
 
 /* clients */
 :root[data-template="swiss"] .client__logo {
   border-radius: 0;
-  border-color: var(--ink);
-  background: var(--paper);
+  border: 0;
+  background: var(--paper-2);
 }
 /* opt the client tile out of the global card hover-flip: the card has no
    chrome, so filling it with ink would hide the title text below the logo */
@@ -360,7 +382,6 @@
 :root[data-template="swiss"] .card--client:hover .client__title { color: var(--accent); }
 :root[data-template="swiss"] .card--client:hover .client__logo {
   background: var(--ink);
-  border-color: var(--ink);
   transform: none;
   box-shadow: none;
 }
@@ -374,15 +395,15 @@
 :root[data-template="swiss"] .client__title {
   font-family: var(--display);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: var(--fs-mini);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: var(--fs-sm);
   color: var(--ink);
 }
 
 /* footer */
 :root[data-template="swiss"] .foot {
-  border-top: 2px solid var(--ink);
+  border-top: 1px solid var(--rule);
   color: var(--ink);
   font-family: var(--display);
   font-weight: 600;
@@ -391,7 +412,7 @@
   font-family: var(--display);
   font-style: normal;
   text-transform: uppercase;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--accent);
   font-size: var(--fs-md);
   letter-spacing: 0.08em;
