@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-theme="auto" data-template="editorial">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Joel Brock — consulting technologist in Portland, OR. Links to my work in cooperative technology, projects, and video.">
+
+  <title>Links — index</title>
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="alternate icon" type="image/png" href="data:image/png;base64,">
+
+  <!-- Preconnect to font + favicon services for snappy first paint -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://www.google.com">
+  <link rel="preconnect" href="https://i.ytimg.com">
+
+  <!-- Editorial: Fraunces (variable serif) + Geist (refined sans) + Geist Mono
+       Swiss: Archivo (variable grotesque, near-Akzidenz/Univers) -->
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..600,30..100,0..1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <script>
+    // Apply saved theme + template before paint to avoid flash
+    try {
+      var t = localStorage.getItem("dlstack-theme");
+      if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+      var tpl = localStorage.getItem("dlstack-template");
+      if (tpl === "swiss" || tpl === "editorial") document.documentElement.dataset.template = tpl;
+    } catch (e) {}
+  </script>
+
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/swiss.css">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Joel Brock — links">
+  <meta property="og:description" content="Consulting technologist in Portland, OR. Cooperative technology, projects, and video.">
+  <meta name="twitter:card" content="summary">
+</head>
+<body>
+  <a class="sr-only" href="#app">Skip to content</a>
+  <div class="shell" id="app">
+    <noscript>
+      <p style="color:var(--accent);font-family:var(--mono);padding:2rem;max-width:48ch">
+        JavaScript is required to render this page — it reads the link list from <code>data/links.json</code>.
+        Enable JavaScript and reload, or browse <a href="data/links.json">the raw data file</a>.
+      </p>
+    </noscript>
+  </div>
+  <script src="assets/js/app.js" defer></script>
+</body>
+</html>

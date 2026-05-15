@@ -1,0 +1,102 @@
+{
+  "profile": {
+    "name": "Ada Lovelace",
+    "handle": "@ada",
+    "tagline": "Mathematician · Programmer · Visionary",
+    "bio": "Short, one-line introduction sits here. Replace everything in this file with your own content, save as data/links.json, and re-upload.",
+    "location": "London"
+  },
+  "theme": {
+    "accent": "#E8482C",
+    "template": "editorial"
+  },
+  "sections": [
+    {
+      "id": "sites",
+      "label": "Sites",
+      "kicker": "Where I live online",
+      "items": [
+        { "type": "link", "title": "Personal site", "url": "https://example.com", "description": "What I do, who I am" },
+        { "type": "link", "title": "Notes", "url": "https://notes.example.com", "description": "Long-form writing" },
+        { "type": "link", "title": "Lab",   "url": "https://lab.example.com",   "description": "Experiments & sketches" }
+      ]
+    },
+    {
+      "id": "projects",
+      "label": "Projects",
+      "kicker": "Things I'm building",
+      "items": [
+        {
+          "type": "card",
+          "featured": true,
+          "title": "Analytical Engine",
+          "url": "https://example.com/projects/engine",
+          "description": "An early proposal for a general-purpose computing machine, with looping and conditional branching.",
+          "tags": ["computing", "research"]
+        },
+        {
+          "type": "card",
+          "title": "Bernoulli Numbers",
+          "url": "https://example.com/projects/bernoulli",
+          "description": "Method for computing Bernoulli numbers using the Engine.",
+          "tags": ["mathematics"]
+        }
+      ]
+    },
+    {
+      "id": "showcase",
+      "label": "Showcase",
+      "kicker": "Selected work",
+      "items": [
+        {
+          "type": "portfolio",
+          "title": "Notes G — diagrams for publication",
+          "url": "https://example.com/showcase/notes-g",
+          "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80",
+          "description": "Tables and diagrams prepared for the 1843 translation."
+        }
+      ]
+    },
+    {
+      "id": "watch",
+      "label": "Watch",
+      "kicker": "Video",
+      "items": [
+        { "type": "youtube", "id": "dQw4w9WgXcQ", "title": "Replace this video ID with your own" }
+      ]
+    },
+    {
+      "id": "clients",
+      "label": "Clients",
+      "kicker": "Who I work with",
+      "layout": "clients",
+      "items": [
+        { "type": "client", "title": "Example Co.",      "url": "https://example.com" },
+        { "type": "client", "title": "Another Org",      "url": "https://another.example.com" },
+        { "type": "client", "title": "Third Party",      "url": "https://third.example.com" },
+        { "type": "client", "title": "Fourth Group",     "url": "https://fourth.example.com" },
+        { "type": "client", "title": "Fifth Cooperative","url": "https://fifth.example.coop" },
+        { "type": "client", "title": "Sixth Studio",     "url": "https://sixth.example.com" }
+      ]
+    },
+    {
+      "id": "writing",
+      "label": "Writing",
+      "kicker": "Notes & long-form",
+      "items": [
+        { "type": "link", "title": "An essay title goes here", "url": "#", "description": "Essay · 8 min read" },
+        { "type": "link", "title": "Another piece of writing", "url": "#", "description": "Field notes" }
+      ]
+    }
+  ],
+  "social": [
+    { "label": "GitHub",   "url": "https://github.com/example",       "icon": "github"   },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/example", "icon": "linkedin" },
+    { "label": "Email",    "url": "mailto:hello@example.com",         "icon": "mail"     },
+    { "label": "RSS",      "url": "/feed.xml",                        "icon": "rss"      }
+  ],
+  "footer": {
+    "copy": "Hand-built. No trackers.",
+    "year": "auto"
+  }
+}
