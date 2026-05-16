@@ -186,6 +186,10 @@ body::before {
 
 /* ───── sections ───── */
 .section { margin-top: clamp(4rem, 7vw, 6rem); }
+.section--headless {
+  /* nest visually under the previous section instead of starting a new one */
+  margin-top: clamp(1.25rem, 2.5vw, 2rem);
+}
 .section__head {
   display: grid;
   grid-template-columns: auto 1fr;

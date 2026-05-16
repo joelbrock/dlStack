@@ -167,8 +167,9 @@
       const gridClass = isClients ? "grid--clients" : "grid";
       body = `<div class="${gridClass}">${items}</div>`;
     }
-    return `
-      <section class="section">
+    const headless = sec.headless === true;
+    const cls = `section${headless ? " section--headless" : ""}`;
+    const head = headless ? "" : `
         <header class="section__head">
           <div class="section__numwrap">
             <small>№</small>
@@ -178,7 +179,10 @@
             <h2 class="section__title">${esc(sec.label)}</h2>
             ${sec.kicker ? `<span class="section__kicker">${esc(sec.kicker)}</span>` : ""}
           </div>
-        </header>
+        </header>`;
+    return `
+      <section class="${cls}" ${sec.id ? `id="${esc(sec.id)}"` : ""}>
+        ${head}
         ${body}
       </section>`;
   }
@@ -280,10 +284,15 @@
     });
   }
 
-  function bootCosmos() {
+  function bootCosmos(theme) {
     const root = document.documentElement;
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    attachCosmosTurtle(theme);
     if (reducedMotion) { root.classList.add("cosmos-static"); return; }
+    attachCosmosCursor();
+    attachCosmosComets();
+    attachCosmosParallax();
+    attachCosmosCardTilt();
 
     const canvas = document.createElement("canvas");
     canvas.className = "cosmos-bg";
@@ -301,6 +310,8 @@
       uniform vec2  u_res;
       uniform float u_time;
       uniform vec2  u_mouse;
+      uniform vec2  u_ripple_pos;
+      uniform float u_ripple_age;
 
       float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       float noise(vec2 p) {
@@ -323,11 +334,20 @@
         vec2 uv = frag / u_res;
         vec2 p  = (frag - 0.5 * u_res) / u_res.y;
 
-        // gravity well: pull sampling toward cursor very subtly
+        // gravity well: pull sampling toward cursor — stronger now
         vec2 m = (u_mouse - 0.5 * u_res) / u_res.y;
         vec2 toM = p - m;
         float md = length(toM) + 0.001;
-        p -= (toM / md) * 0.03 * exp(-md * 1.6);
+        p -= (toM / md) * 0.06 * exp(-md * 1.2);
+
+        // click ripple — propagating ring of displacement and brightness
+        vec2 rp = (u_ripple_pos - 0.5 * u_res) / u_res.y;
+        float rd = length(p - rp);
+        float rt = u_ripple_age;
+        float ringR = rt * 1.4;
+        float ringW = 0.16 + rt * 0.05;
+        float ring = exp(-pow((rd - ringR) / ringW, 2.0)) * exp(-rt * 0.7);
+        p -= normalize(p - rp + vec2(0.0001)) * ring * 0.10;
 
         // nebula via warped fbm
         vec2 q  = p * 1.25 + vec2(u_time * 0.015, u_time * 0.010);
@@ -344,6 +364,10 @@
         col = mix(col, violet,  smoothstep(0.25, 0.70, n));
         col = mix(col, magenta, smoothstep(0.55, 0.92, n) * 0.85);
         col += cyan * smoothstep(0.78, 0.98, n) * 0.45;
+
+        // ripple adds a luminous cyan ring
+        col += cyan * ring * 0.85;
+        col += vec3(1.0, 0.6, 0.95) * ring * 0.35;
 
         // soft vignette
         float vig = smoothstep(1.25, 0.30, length(p));
@@ -411,9 +435,11 @@
     gl.enableVertexAttribArray(aLoc);
     gl.vertexAttribPointer(aLoc, 2, gl.FLOAT, false, 0, 0);
 
-    const uRes   = gl.getUniformLocation(prog, "u_res");
-    const uTime  = gl.getUniformLocation(prog, "u_time");
-    const uMouse = gl.getUniformLocation(prog, "u_mouse");
+    const uRes        = gl.getUniformLocation(prog, "u_res");
+    const uTime       = gl.getUniformLocation(prog, "u_time");
+    const uMouse      = gl.getUniformLocation(prog, "u_mouse");
+    const uRipplePos  = gl.getUniformLocation(prog, "u_ripple_pos");
+    const uRippleAge  = gl.getUniformLocation(prog, "u_ripple_age");
 
     document.body.prepend(canvas);
 
@@ -435,6 +461,15 @@
       target.y = 1 - e.clientY / window.innerHeight;
     }, { passive: true });
 
+    const t0 = performance.now();
+    const ripple = { x: 0, y: 0, t0: -1e6 };
+    window.addEventListener("pointerdown", (e) => {
+      const dpr2 = Math.min(window.devicePixelRatio || 1, 1.5);
+      ripple.x = e.clientX * dpr2;
+      ripple.y = (window.innerHeight - e.clientY) * dpr2;
+      ripple.t0 = (performance.now() - t0) / 1000;
+    }, { passive: true });
+
     let running = true;
     document.addEventListener("visibilitychange", () => {
       const wasPaused = !running;
@@ -442,18 +477,108 @@
       if (running && wasPaused) requestAnimationFrame(loop);
     });
 
-    const t0 = performance.now();
     function loop(now) {
       if (!running) return;
       mouse.x += (target.x - mouse.x) * 0.05;
       mouse.y += (target.y - mouse.y) * 0.05;
-      gl.uniform2f(uRes,   w, h);
-      gl.uniform1f(uTime,  (now - t0) / 1000);
-      gl.uniform2f(uMouse, mouse.x * w, mouse.y * h);
+      const tNow = (now - t0) / 1000;
+      gl.uniform2f(uRes,        w, h);
+      gl.uniform1f(uTime,       tNow);
+      gl.uniform2f(uMouse,      mouse.x * w, mouse.y * h);
+      gl.uniform2f(uRipplePos,  ripple.x, ripple.y);
+      gl.uniform1f(uRippleAge,  tNow - ripple.t0);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);
+  }
+
+  /* ───── cosmos overlays + interactions ───── */
+  function attachCosmosCursor() {
+    const root = document.documentElement;
+    const halo = document.createElement("div");
+    halo.className = "cosmos-halo";
+    halo.setAttribute("aria-hidden", "true");
+    document.body.appendChild(halo);
+
+    let x = window.innerWidth / 2, y = window.innerHeight / 2;
+    let tx = x, ty = y;
+    let active = false;
+    const wakeUp = () => { if (!active) { active = true; root.classList.add("cosmos-cursor"); } };
+    window.addEventListener("pointermove", (e) => {
+      tx = e.clientX; ty = e.clientY; wakeUp();
+      const nx = (e.clientX / window.innerWidth) - 0.5;
+      const ny = (e.clientY / window.innerHeight) - 0.5;
+      root.style.setProperty("--cm-x", nx.toFixed(3));
+      root.style.setProperty("--cm-y", ny.toFixed(3));
+    }, { passive: true });
+    window.addEventListener("pointerleave", () => root.classList.remove("cosmos-cursor"));
+
+    (function tick() {
+      x += (tx - x) * 0.14;
+      y += (ty - y) * 0.14;
+      halo.style.transform = `translate3d(${x - 300}px, ${y - 300}px, 0)`;
+      requestAnimationFrame(tick);
+    })();
+  }
+
+  function attachCosmosComets() {
+    const frag = document.createDocumentFragment();
+    for (let i = 1; i <= 3; i++) {
+      const c = document.createElement("div");
+      c.className = `cosmos-comet cosmos-comet--${i}`;
+      c.setAttribute("aria-hidden", "true");
+      frag.appendChild(c);
+    }
+    document.body.appendChild(frag);
+  }
+
+  function attachCosmosParallax() {
+    /* CSS reads --cm-x / --cm-y set in attachCosmosCursor */
+  }
+
+  function attachCosmosCardTilt() {
+    document.querySelectorAll(".card").forEach((card) => {
+      if (card.classList.contains("card--testimonial")) return;
+      if (card.classList.contains("card--client"))      return;
+      const sh = document.createElement("span");
+      sh.className = "card__shimmer";
+      sh.setAttribute("aria-hidden", "true");
+      card.prepend(sh);
+      let raf = 0;
+      card.addEventListener("pointermove", (e) => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          const rect = card.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width;
+          const y = (e.clientY - rect.top)  / rect.height;
+          card.style.setProperty("--tx", (x - 0.5).toFixed(3));
+          card.style.setProperty("--ty", (y - 0.5).toFixed(3));
+          card.style.setProperty("--sx", `${(x * 100).toFixed(1)}%`);
+          card.style.setProperty("--sy", `${(y * 100).toFixed(1)}%`);
+          raf = 0;
+        });
+      });
+      card.addEventListener("pointerleave", () => {
+        card.style.setProperty("--tx", "0");
+        card.style.setProperty("--ty", "0");
+      });
+    });
+  }
+
+  function attachCosmosTurtle(theme) {
+    const src = (theme && theme.turtle) || "assets/img/turtle.png";
+    const probe = new Image();
+    probe.onload = () => {
+      const t = document.createElement("img");
+      t.src = src;
+      t.alt = "";
+      t.className = "cosmos-turtle";
+      t.setAttribute("aria-hidden", "true");
+      document.body.appendChild(t);
+    };
+    probe.onerror = () => {};
+    probe.src = src;
   }
 
   function attachCarousels(root) {
@@ -554,7 +679,7 @@
     const tpl = validTpl.has(data.theme?.template) ? data.theme.template : "editorial";
     document.documentElement.dataset.template = tpl;
     try { localStorage.setItem("dlstack-template", tpl); } catch (e) {}
-    if (tpl === "cosmos") bootCosmos();
+    if (tpl === "cosmos") bootCosmos(data.theme || {});
 
     const p = data.profile || {};
     const sections = data.sections || [];

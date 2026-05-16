@@ -95,9 +95,17 @@ An ordered array of groups. Each section renders with a numbered masthead
   "label": "Sites",              // required, the section title
   "kicker": "Where I live online", // optional italic tagline
   "layout": "clients",           // optional — see Layouts below
+  "headless": true,              // optional — render body only, no head
   "items": [ … ]                 // required, array of items
 }
 ```
+
+Set `headless: true` to render a section's body without the
+`№ NN / Label / kicker` header. Tighter top margin too, so the
+contents visually nest under the previous section. Useful for sliding
+a testimonials carousel underneath a Clients wall, for example —
+put the testimonials section directly after the clients section in
+the `sections` array with `headless: true` and they'll read as one.
 
 #### Layouts
 

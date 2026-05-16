@@ -52,6 +52,145 @@
 }
 @keyframes cosmos-fade-in { to { opacity: 1; } }
 
+/* cursor aurora — soft cyan/magenta halo that lags behind the pointer */
+:root[data-template="cosmos"] .cosmos-halo {
+  position: fixed; top: 0; left: 0;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(122, 247, 255, 0.20) 0%,
+      rgba(176, 122, 255, 0.14) 18%,
+      rgba(255,  78, 205, 0.10) 38%,
+      transparent 65%);
+  mix-blend-mode: screen;
+  filter: blur(8px);
+  opacity: 0;
+  transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+}
+:root[data-template="cosmos"].cosmos-cursor .cosmos-halo { opacity: 1; }
+
+/* periodic comets — three streaks crossing the page */
+:root[data-template="cosmos"] .cosmos-comet {
+  position: fixed; top: 0; left: 0;
+  width: clamp(120px, 12vw, 200px);
+  height: 2px;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.85) 60%,
+    var(--accent) 85%,
+    transparent 100%);
+  filter: drop-shadow(0 0 6px var(--accent)) drop-shadow(0 0 18px var(--accent-3));
+  opacity: 0;
+  transform-origin: right center;
+}
+:root[data-template="cosmos"] .cosmos-comet--1 { animation: cosmos-comet-a 14s 4s ease-in infinite; }
+:root[data-template="cosmos"] .cosmos-comet--2 { animation: cosmos-comet-b 22s 11s ease-in infinite; }
+:root[data-template="cosmos"] .cosmos-comet--3 { animation: cosmos-comet-c 19s 19s ease-in infinite; }
+@keyframes cosmos-comet-a {
+  0%   { transform: translate(-20vw, 12vh) rotate(28deg) scaleX(0.4); opacity: 0; }
+  4%   { opacity: 1; }
+  18%  { transform: translate(110vw, 70vh) rotate(28deg) scaleX(1);   opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes cosmos-comet-b {
+  0%   { transform: translate(115vw, 8vh) rotate(158deg) scaleX(0.4); opacity: 0; }
+  5%   { opacity: 1; }
+  22%  { transform: translate(-20vw, 65vh) rotate(158deg) scaleX(1);  opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes cosmos-comet-c {
+  0%   { transform: translate(-20vw, 50vh) rotate(45deg) scaleX(0.4); opacity: 0; }
+  3%   { opacity: 1; }
+  16%  { transform: translate(110vw, -10vh) rotate(45deg) scaleX(1);  opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* card 3D tilt + cursor-tracking holographic shimmer */
+:root[data-template="cosmos"] .card { transform-style: preserve-3d; perspective: 1000px; }
+:root[data-template="cosmos"] .card:hover {
+  transform:
+    translateY(-4px)
+    rotateX(calc(var(--ty, 0) * -6deg))
+    rotateY(calc(var(--tx, 0) *  6deg));
+}
+:root[data-template="cosmos"] .card .card__shimmer {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(circle 220px at var(--sx, 50%) var(--sy, 50%),
+    rgba(122, 247, 255, 0.20),
+    rgba(176, 122, 255, 0.10) 35%,
+    transparent 70%);
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 350ms cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 0;
+}
+:root[data-template="cosmos"] .card:hover .card__shimmer { opacity: 1; }
+:root[data-template="cosmos"] .card > * { position: relative; z-index: 1; }
+
+/* hero parallax — name shifts counter to cursor, orb drifts with it */
+:root[data-template="cosmos"] .hero__name {
+  transform:
+    translate3d(calc(var(--cm-x, 0) * -10px), calc(var(--cm-y, 0) * -6px), 0);
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+:root[data-template="cosmos"] .hero__asterism {
+  /* override the base drift to include parallax */
+  animation: cosmos-orb-rise 1400ms 300ms cubic-bezier(0.16, 1, 0.30, 1) both;
+  transform: translate3d(calc(var(--cm-x, 0) * 16px), calc(var(--cm-y, 0) * 10px), 0);
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+:root[data-template="cosmos"] .hero__tagline {
+  transform: translate3d(calc(var(--cm-x, 0) * -4px), calc(var(--cm-y, 0) * -2px), 0);
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* galactic space turtle — floats in from the left, dips, then back out */
+:root[data-template="cosmos"] .cosmos-turtle {
+  position: fixed;
+  top: clamp(48px, 9vh, 110px);
+  left: 0;
+  width: clamp(140px, 16vw, 240px);
+  height: auto;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  filter:
+    drop-shadow(0 0 22px rgba(122, 247, 255, 0.55))
+    drop-shadow(0 0 48px rgba(176, 122, 255, 0.45))
+    drop-shadow(0 0 80px rgba(255,  78, 205, 0.25));
+  animation:
+    cosmos-turtle-cycle 28s 2s linear infinite,
+    cosmos-turtle-bob   4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+@keyframes cosmos-turtle-cycle {
+  0%   { transform: translate(-25vw, 0)   rotate(-6deg); opacity: 0; }
+  6%   { opacity: 1; }
+  45%  { transform: translate(45vw, -4vh) rotate(4deg);  opacity: 1; }
+  88%  { transform: translate(112vw, 0)   rotate(8deg);  opacity: 1; }
+  93%  { opacity: 0; }
+  100% { transform: translate(112vw, 0)   rotate(8deg);  opacity: 0; }
+}
+@keyframes cosmos-turtle-bob {
+  0%, 100% { filter:
+    drop-shadow(0 0 22px rgba(122, 247, 255, 0.55))
+    drop-shadow(0 0 48px rgba(176, 122, 255, 0.45))
+    drop-shadow(0 0 80px rgba(255,  78, 205, 0.25)); }
+  50%      { filter:
+    drop-shadow(0 0 32px rgba(122, 247, 255, 0.75))
+    drop-shadow(0 0 64px rgba(176, 122, 255, 0.60))
+    drop-shadow(0 0 110px rgba(255, 78, 205, 0.40)); }
+}
+
 /* CSS-only static fallback nebula when WebGL is unavailable */
 :root[data-template="cosmos"].cosmos-static body {
   background:
@@ -635,10 +774,22 @@
   :root[data-template="cosmos"] .marker__brand .star,
   :root[data-template="cosmos"] .hero__asterism,
   :root[data-template="cosmos"] .section__head::after,
-  :root[data-template="cosmos"] .card::before {
+  :root[data-template="cosmos"] .card::before,
+  :root[data-template="cosmos"] .cosmos-comet,
+  :root[data-template="cosmos"] .cosmos-turtle {
     animation: none !important;
+    transition: none !important;
   }
-  :root[data-template="cosmos"] .cosmos-bg { display: none; }
+  :root[data-template="cosmos"] .cosmos-bg,
+  :root[data-template="cosmos"] .cosmos-halo,
+  :root[data-template="cosmos"] .cosmos-comet { display: none; }
+  :root[data-template="cosmos"] .cosmos-turtle {
+    opacity: 1;
+    transform: translate(2vw, 0) rotate(-2deg);
+  }
+  :root[data-template="cosmos"] .hero__name,
+  :root[data-template="cosmos"] .hero__tagline,
+  :root[data-template="cosmos"] .hero__asterism { transform: none !important; }
   :root[data-template="cosmos"].cosmos-static body {
     background:
       radial-gradient(ellipse at 30% 20%, rgba(176, 122, 255, 0.25), transparent 60%),

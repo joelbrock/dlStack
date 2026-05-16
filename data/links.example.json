@@ -96,6 +96,7 @@
       "label": "Testimonials",
       "kicker": "What people say",
       "layout": "testimonials",
+      "headless": true,
       "items": [
         {
           "type": "testimonial",
