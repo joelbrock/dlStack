@@ -19,7 +19,7 @@
 
   <!-- Editorial: Fraunces (variable serif) + Geist (refined sans) + Geist Mono
        Swiss: Archivo (variable grotesque, near-Akzidenz/Univers) -->
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=DM+Serif+Display:ital@0;1&family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..600,30..100,0..1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=DM+Serif+Display:ital@0;1&family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..600,30..100,0..1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
 
   <script>
     // Apply saved theme + template before paint to avoid flash
@@ -27,12 +27,13 @@
       var t = localStorage.getItem("dlstack-theme");
       if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
       var tpl = localStorage.getItem("dlstack-template");
-      if (tpl === "swiss" || tpl === "editorial") document.documentElement.dataset.template = tpl;
+      if (tpl === "swiss" || tpl === "editorial" || tpl === "cosmos") document.documentElement.dataset.template = tpl;
     } catch (e) {}
   </script>
 
   <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="assets/css/swiss.css">
+  <link rel="stylesheet" href="assets/css/cosmos.css">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Joel Brock — links">

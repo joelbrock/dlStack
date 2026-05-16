@@ -160,7 +160,7 @@
     const parts = String(name).trim().split(/\s+/);
     if (parts.length < 2) return `<span class="hero__name-first">${esc(name)}</span>`;
     const last = parts.pop();
-    return `<span class="hero__name-first">${esc(parts.join(" "))}</span> <em>${esc(last)}</em>`;
+    return `<span class="hero__name-first">${esc(parts.join(" "))}</span> <em data-text="${esc(last)}">${esc(last)}</em>`;
   }
 
   function fmtDate(d) {
@@ -235,6 +235,182 @@
     });
   }
 
+  function bootCosmos() {
+    const root = document.documentElement;
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) { root.classList.add("cosmos-static"); return; }
+
+    const canvas = document.createElement("canvas");
+    canvas.className = "cosmos-bg";
+    canvas.setAttribute("aria-hidden", "true");
+    const gl = canvas.getContext("webgl", { antialias: false, alpha: false, premultipliedAlpha: false }) ||
+               canvas.getContext("experimental-webgl");
+    if (!gl) { root.classList.add("cosmos-static"); return; }
+
+    const vsSrc = `
+      attribute vec2 a;
+      void main() { gl_Position = vec4(a, 0.0, 1.0); }
+    `;
+    const fsSrc = `
+      precision highp float;
+      uniform vec2  u_res;
+      uniform float u_time;
+      uniform vec2  u_mouse;
+
+      float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+      float noise(vec2 p) {
+        vec2 i = floor(p), f = fract(p);
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(mix(hash(i),            hash(i + vec2(1.0, 0.0)), u.x),
+                   mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+      }
+      float fbm(vec2 p) {
+        float v = 0.0, a = 0.55;
+        for (int i = 0; i < 5; i++) {
+          v += a * noise(p);
+          p *= 2.04; a *= 0.5;
+        }
+        return v;
+      }
+
+      void main() {
+        vec2 frag = gl_FragCoord.xy;
+        vec2 uv = frag / u_res;
+        vec2 p  = (frag - 0.5 * u_res) / u_res.y;
+
+        // gravity well: pull sampling toward cursor very subtly
+        vec2 m = (u_mouse - 0.5 * u_res) / u_res.y;
+        vec2 toM = p - m;
+        float md = length(toM) + 0.001;
+        p -= (toM / md) * 0.03 * exp(-md * 1.6);
+
+        // nebula via warped fbm
+        vec2 q  = p * 1.25 + vec2(u_time * 0.015, u_time * 0.010);
+        vec2 r  = q + vec2(fbm(q + u_time * 0.04), fbm(q - u_time * 0.03));
+        float n = fbm(r);
+
+        // palette: deep indigo -> magenta -> violet -> cyan ridges
+        vec3 deep    = vec3(0.020, 0.012, 0.055);
+        vec3 violet  = vec3(0.350, 0.150, 0.620);
+        vec3 magenta = vec3(0.950, 0.220, 0.700);
+        vec3 cyan    = vec3(0.290, 0.940, 1.000);
+
+        vec3 col = deep;
+        col = mix(col, violet,  smoothstep(0.25, 0.70, n));
+        col = mix(col, magenta, smoothstep(0.55, 0.92, n) * 0.85);
+        col += cyan * smoothstep(0.78, 0.98, n) * 0.45;
+
+        // soft vignette
+        float vig = smoothstep(1.25, 0.30, length(p));
+        col *= mix(0.55, 1.05, vig);
+
+        // ───── starfield — two layers ─────
+        // layer 1 — small dense
+        float starDensity = 90.0;
+        vec2 sc = uv * starDensity * vec2(u_res.x / u_res.y, 1.0);
+        vec2 si = floor(sc);
+        vec2 sf = fract(sc) - 0.5;
+        float sh = hash(si);
+        if (sh > 0.986) {
+          float d = length(sf);
+          float tw = 0.55 + 0.45 * sin(u_time * 2.4 + sh * 88.0);
+          col += vec3(smoothstep(0.05, 0.0, d) * tw);
+        }
+        // layer 2 — bright sparse blue-white
+        starDensity = 28.0;
+        sc = uv * starDensity * vec2(u_res.x / u_res.y, 1.0);
+        si = floor(sc);
+        sf = fract(sc) - 0.5;
+        sh = hash(si + 13.7);
+        if (sh > 0.993) {
+          float d = length(sf);
+          float tw = 0.3 + 0.7 * sin(u_time * 1.7 + sh * 200.0);
+          float s  = smoothstep(0.09, 0.0, d) * tw;
+          col += vec3(0.72, 0.86, 1.0) * s * 1.8;
+          // soft halo
+          col += vec3(0.45, 0.55, 0.95) * smoothstep(0.28, 0.0, d) * tw * 0.18;
+        }
+
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `;
+
+    const compile = (type, src) => {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.warn("[cosmos]", gl.getShaderInfoLog(s));
+        return null;
+      }
+      return s;
+    };
+    const vs = compile(gl.VERTEX_SHADER, vsSrc);
+    const fs = compile(gl.FRAGMENT_SHADER, fsSrc);
+    if (!vs || !fs) { root.classList.add("cosmos-static"); return; }
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs); gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.warn("[cosmos]", gl.getProgramInfoLog(prog));
+      root.classList.add("cosmos-static"); return;
+    }
+    gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      -1,-1,  1,-1,  -1, 1,
+      -1, 1,  1,-1,   1, 1
+    ]), gl.STATIC_DRAW);
+    const aLoc = gl.getAttribLocation(prog, "a");
+    gl.enableVertexAttribArray(aLoc);
+    gl.vertexAttribPointer(aLoc, 2, gl.FLOAT, false, 0, 0);
+
+    const uRes   = gl.getUniformLocation(prog, "u_res");
+    const uTime  = gl.getUniformLocation(prog, "u_time");
+    const uMouse = gl.getUniformLocation(prog, "u_mouse");
+
+    document.body.prepend(canvas);
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    let w = 0, h = 0;
+    const resize = () => {
+      w = Math.floor(window.innerWidth  * dpr);
+      h = Math.floor(window.innerHeight * dpr);
+      canvas.width  = w; canvas.height = h;
+      gl.viewport(0, 0, w, h);
+    };
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+
+    const mouse  = { x: 0.5, y: 0.5 };
+    const target = { x: 0.5, y: 0.5 };
+    window.addEventListener("pointermove", (e) => {
+      target.x = e.clientX / window.innerWidth;
+      target.y = 1 - e.clientY / window.innerHeight;
+    }, { passive: true });
+
+    let running = true;
+    document.addEventListener("visibilitychange", () => {
+      const wasPaused = !running;
+      running = !document.hidden;
+      if (running && wasPaused) requestAnimationFrame(loop);
+    });
+
+    const t0 = performance.now();
+    function loop(now) {
+      if (!running) return;
+      mouse.x += (target.x - mouse.x) * 0.05;
+      mouse.y += (target.y - mouse.y) * 0.05;
+      gl.uniform2f(uRes,   w, h);
+      gl.uniform1f(uTime,  (now - t0) / 1000);
+      gl.uniform2f(uMouse, mouse.x * w, mouse.y * h);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  }
+
   function attachReveal(root) {
     if (!("IntersectionObserver" in window)) {
       $$(".reveal", root).forEach(el => el.classList.add("in"));
@@ -277,9 +453,11 @@
     if (data.theme?.accent) {
       document.documentElement.style.setProperty("--accent", data.theme.accent);
     }
-    const tpl = data.theme?.template === "swiss" ? "swiss" : "editorial";
+    const validTpl = new Set(["editorial", "swiss", "cosmos"]);
+    const tpl = validTpl.has(data.theme?.template) ? data.theme.template : "editorial";
     document.documentElement.dataset.template = tpl;
     try { localStorage.setItem("dlstack-template", tpl); } catch (e) {}
+    if (tpl === "cosmos") bootCosmos();
 
     const p = data.profile || {};
     const sections = data.sections || [];

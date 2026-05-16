@@ -1,0 +1,595 @@
+/* dlstack — Singularity template
+   WebGL nebula + procedural starfield + chromatic-glow hero.
+   Scoped to :root[data-template="cosmos"] so it's inert otherwise.
+*/
+
+@property --cosmos-hue {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+:root[data-template="cosmos"] {
+  --paper:     #050211;
+  --paper-2:   #0E0826;
+  --ink:       #ECF1FF;
+  --ink-2:     #C2CDF0;
+  --muted:     #8693C2;
+  --rule:      rgba(180, 200, 255, 0.16);
+  --accent:    #7AF7FF;
+  --accent-2:  #FF4ECD;
+  --accent-3:  #B07AFF;
+  --on-accent: #050211;
+  --display:   "Orbitron", "Geist", system-ui, sans-serif;
+  --body:      "Geist", system-ui, sans-serif;
+  --mono:      "Geist Mono", ui-monospace, Menlo, monospace;
+  --radius:    14px;
+  color-scheme: dark;
+}
+
+/* always dark — ignore data-theme on cosmos */
+:root[data-template="cosmos"][data-theme="light"],
+:root[data-template="cosmos"][data-theme="dark"],
+:root[data-template="cosmos"][data-theme="auto"] {
+  --paper:     #050211;
+  --paper-2:   #0E0826;
+  --ink:       #ECF1FF;
+  --ink-2:     #C2CDF0;
+  --muted:     #8693C2;
+}
+
+/* remove editorial paper grain */
+:root[data-template="cosmos"] body::before { display: none; }
+
+/* shader canvas — fixed behind everything */
+:root[data-template="cosmos"] .cosmos-bg {
+  position: fixed; inset: 0;
+  z-index: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  opacity: 0;
+  animation: cosmos-fade-in 1800ms 200ms cubic-bezier(0.16, 1, 0.30, 1) forwards;
+}
+@keyframes cosmos-fade-in { to { opacity: 1; } }
+
+/* CSS-only static fallback nebula when WebGL is unavailable */
+:root[data-template="cosmos"].cosmos-static body {
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(176, 122, 255, 0.35), transparent 55%),
+    radial-gradient(ellipse at 80% 70%, rgba(255, 78, 205, 0.28), transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(122, 247, 255, 0.22), transparent 55%),
+    var(--paper);
+}
+:root[data-template="cosmos"].cosmos-static body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 12% 22%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 78% 33%, #fff 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 44% 78%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 24% 88%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 64% 14%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 90% 90%, #fff 50%, transparent 100%);
+  opacity: 0.55;
+}
+
+:root[data-template="cosmos"] body {
+  background: var(--paper);
+}
+:root[data-template="cosmos"] .shell { z-index: 1; }
+
+/* ───── marker bar ───── */
+:root[data-template="cosmos"] .marker {
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: var(--ink-2);
+}
+:root[data-template="cosmos"] .marker__brand { color: var(--accent); gap: 0.55rem; }
+:root[data-template="cosmos"] .marker__brand .star {
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: inline-block;
+  font-size: 0; transform: none;
+  box-shadow:
+    0 0 8px var(--accent),
+    0 0 18px color-mix(in oklch, var(--accent) 80%, transparent),
+    0 0 32px color-mix(in oklch, var(--accent-2) 60%, transparent);
+  animation: cosmos-pulse 2.4s ease-in-out infinite;
+}
+@keyframes cosmos-pulse {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%      { transform: scale(1.3); opacity: 0.75; }
+}
+:root[data-template="cosmos"] .marker__year {
+  color: var(--accent-2);
+  text-shadow: 0 0 12px color-mix(in oklch, var(--accent-2) 60%, transparent);
+}
+:root[data-template="cosmos"] .theme {
+  border-radius: 999px;
+  border-color: var(--rule);
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--ink-2);
+  background: rgba(20, 14, 50, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+:root[data-template="cosmos"] .theme:hover {
+  background: rgba(122, 247, 255, 0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px color-mix(in oklch, var(--accent) 40%, transparent);
+}
+
+/* ───── hero ───── */
+:root[data-template="cosmos"] .hero { position: relative; }
+:root[data-template="cosmos"] .hero__name {
+  font-family: var(--display);
+  font-style: normal;
+  font-weight: 700;
+  font-variation-settings: normal;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  color: var(--ink);
+  position: relative;
+}
+:root[data-template="cosmos"] .hero__name .hero__name-first {
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-shadow:
+    0 0 24px rgba(122, 247, 255, 0.45),
+    0 0 60px rgba(176, 122, 255, 0.30);
+}
+:root[data-template="cosmos"] .hero__name em {
+  font-style: normal;
+  font-weight: 900;
+  font-variation-settings: normal;
+  color: var(--accent-2);
+  text-shadow:
+    0 0 24px rgba(255, 78, 205, 0.55),
+    0 0 50px rgba(255, 78, 205, 0.35),
+    0 0 90px rgba(176, 122, 255, 0.30);
+  position: relative;
+  display: inline-block;
+}
+:root[data-template="cosmos"] .hero__name em::before,
+:root[data-template="cosmos"] .hero__name em::after {
+  content: attr(data-text);
+  position: absolute; left: 0; top: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  mix-blend-mode: screen;
+}
+:root[data-template="cosmos"] .hero__name em::before {
+  color: var(--accent);
+  transform: translate(-3px, 0);
+}
+:root[data-template="cosmos"] .hero__name em::after {
+  color: var(--accent-2);
+  transform: translate(3px, 0);
+}
+:root[data-template="cosmos"] .hero__name:hover em::before,
+:root[data-template="cosmos"] .hero__name:hover em::after {
+  opacity: 0.7;
+  animation: cosmos-rgb-shift 1.2s steps(8) infinite;
+}
+@keyframes cosmos-rgb-shift {
+  0%   { transform: translate(-3px, 0); }
+  25%  { transform: translate(-2px, 1px); }
+  50%  { transform: translate(-4px, -1px); }
+  75%  { transform: translate(-2px, 0); }
+  100% { transform: translate(-3px, 0); }
+}
+:root[data-template="cosmos"] .hero__name:hover em::after {
+  animation-name: cosmos-rgb-shift-2;
+}
+@keyframes cosmos-rgb-shift-2 {
+  0%   { transform: translate(3px, 0); }
+  25%  { transform: translate(4px, -1px); }
+  50%  { transform: translate(2px, 1px); }
+  75%  { transform: translate(4px, 0); }
+  100% { transform: translate(3px, 0); }
+}
+
+/* asterism becomes a glowing orb */
+:root[data-template="cosmos"] .hero__asterism {
+  font-size: 0; color: transparent;
+  width: clamp(4rem, 8vw, 6.5rem);
+  height: clamp(4rem, 8vw, 6.5rem);
+  background: radial-gradient(circle at 35% 35%,
+    #fff 0%,
+    var(--accent) 25%,
+    var(--accent-3) 55%,
+    transparent 80%);
+  border-radius: 50%;
+  transform: none;
+  filter: blur(0.5px);
+  box-shadow:
+    0 0 40px var(--accent),
+    0 0 80px var(--accent-3),
+    0 0 120px color-mix(in oklch, var(--accent-2) 60%, transparent);
+  animation:
+    cosmos-orb-rise 1400ms 300ms cubic-bezier(0.16, 1, 0.30, 1) both,
+    cosmos-orb-drift 9s ease-in-out 1700ms infinite;
+}
+@keyframes cosmos-orb-rise {
+  from { opacity: 0; transform: scale(0.2) translateY(-20px); }
+  to   { opacity: 0.95; transform: scale(1) translateY(0); }
+}
+@keyframes cosmos-orb-drift {
+  0%, 100% { transform: translate(0, 0); }
+  33%      { transform: translate(-8px, 6px); }
+  66%      { transform: translate(6px, -4px); }
+}
+
+:root[data-template="cosmos"] .hero__tagline {
+  font-family: var(--display);
+  font-style: normal;
+  font-weight: 400;
+  font-variation-settings: normal;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  font-size: clamp(1rem, 0.8rem + 0.9vw, 1.4rem);
+  max-width: 36ch;
+}
+:root[data-template="cosmos"] .hero__tagline span {
+  color: var(--accent);
+  text-shadow: 0 0 16px color-mix(in oklch, var(--accent) 70%, transparent);
+  padding: 0 0.25em;
+}
+:root[data-template="cosmos"] .hero__bio {
+  color: var(--ink-2);
+  font-family: var(--body);
+}
+
+/* ───── social ───── */
+:root[data-template="cosmos"] .social a {
+  border-radius: 999px;
+  border-color: var(--rule);
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: var(--fs-mini);
+  padding: 10px 16px;
+  color: var(--ink-2);
+  background: rgba(20, 14, 50, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+:root[data-template="cosmos"] .social a:hover {
+  background: rgba(122, 247, 255, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 22px color-mix(in oklch, var(--accent) 35%, transparent),
+    0 8px 22px -10px color-mix(in oklch, var(--accent) 50%, transparent);
+}
+
+/* ───── sections ───── */
+:root[data-template="cosmos"] .section__head {
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+}
+:root[data-template="cosmos"] .section__head::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg,
+    var(--accent) 0%,
+    var(--accent-3) 40%,
+    var(--accent-2) 70%,
+    transparent 100%);
+  box-shadow: 0 0 12px var(--accent-3);
+  transform-origin: left;
+  animation: cosmos-line-in 1400ms cubic-bezier(0.16, 1, 0.30, 1) both;
+}
+@keyframes cosmos-line-in {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 1; }
+}
+:root[data-template="cosmos"] .section__numwrap small {
+  color: var(--accent);
+  font-weight: 600;
+  font-style: normal;
+  font-family: var(--display);
+  font-variation-settings: normal;
+  letter-spacing: 0.22em;
+  font-size: var(--fs-sm);
+  text-shadow: 0 0 12px color-mix(in oklch, var(--accent) 60%, transparent);
+}
+:root[data-template="cosmos"] .section__num {
+  font-family: var(--display);
+  font-style: normal;
+  font-weight: 900;
+  font-variation-settings: normal;
+  color: var(--ink);
+  letter-spacing: -0.04em;
+  background: linear-gradient(180deg, var(--ink) 0%, var(--accent) 60%, var(--accent-3) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 18px rgba(122, 247, 255, 0.4));
+}
+:root[data-template="cosmos"] .section__title {
+  font-family: var(--display);
+  font-style: normal;
+  font-weight: 700;
+  font-variation-settings: normal;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+:root[data-template="cosmos"] .section__kicker {
+  font-family: var(--display);
+  font-style: normal;
+  font-weight: 400;
+  font-variation-settings: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: var(--fs-mini);
+  color: var(--muted);
+}
+
+/* ───── cards — holographic ───── */
+:root[data-template="cosmos"] .card {
+  border-radius: var(--radius);
+  border: 1px solid var(--rule);
+  background: linear-gradient(135deg, rgba(30, 22, 64, 0.55), rgba(14, 8, 38, 0.55));
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  color: var(--ink);
+  isolation: isolate;
+  overflow: hidden;
+}
+:root[data-template="cosmos"] .card::before {
+  content: ""; position: absolute; inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--cosmos-hue, 0deg),
+    var(--accent), var(--accent-2), var(--accent-3), var(--accent));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 350ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+:root[data-template="cosmos"] .card:hover {
+  transform: translateY(-4px);
+  border-color: transparent;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 18px 44px -18px rgba(122, 247, 255, 0.35),
+    0 6px 20px -8px rgba(255, 78, 205, 0.30);
+}
+:root[data-template="cosmos"] .card:hover::before {
+  opacity: 1;
+  animation: cosmos-hue-rot 6s linear infinite;
+}
+@keyframes cosmos-hue-rot {
+  to { --cosmos-hue: 360deg; }
+}
+:root[data-template="cosmos"] .card::after {
+  color: var(--accent);
+  font-family: var(--display);
+  font-weight: 700;
+  text-shadow: 0 0 8px color-mix(in oklch, var(--accent) 70%, transparent);
+}
+
+:root[data-template="cosmos"] .card__title {
+  font-family: var(--display);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+}
+:root[data-template="cosmos"] .card__desc {
+  font-family: var(--body);
+  color: var(--ink-2);
+}
+:root[data-template="cosmos"] .card__host {
+  font-family: var(--display);
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  text-shadow: 0 0 8px color-mix(in oklch, var(--accent) 50%, transparent);
+}
+:root[data-template="cosmos"] .card__date {
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  color: var(--muted);
+}
+:root[data-template="cosmos"] .card__meta .card__date::before { color: var(--accent-2); }
+
+/* link favicon */
+:root[data-template="cosmos"] .card--link .favicon {
+  border-radius: 10px;
+  border-color: var(--rule);
+  background: rgba(255,255,255,0.04);
+}
+
+/* project card */
+:root[data-template="cosmos"] .card--project .card__title {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: var(--fs-lg);
+  line-height: 1.05;
+  background: linear-gradient(135deg, var(--ink) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* featured — accent glow card */
+:root[data-template="cosmos"] .card--featured {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 78, 205, 0.45), transparent 60%),
+    radial-gradient(circle at 0% 100%, rgba(122, 247, 255, 0.4), transparent 65%),
+    linear-gradient(135deg, rgba(176, 122, 255, 0.45), rgba(14, 8, 38, 0.8));
+  border-color: rgba(255,255,255,0.12);
+  color: #fff;
+}
+:root[data-template="cosmos"] .card--featured::before { opacity: 0.55; animation: cosmos-hue-rot 6s linear infinite; }
+:root[data-template="cosmos"] .card--featured:hover::before { opacity: 1; }
+:root[data-template="cosmos"] .card--featured .card__title {
+  -webkit-text-fill-color: #fff;
+  background: none;
+  color: #fff;
+  text-shadow:
+    0 0 24px rgba(122, 247, 255, 0.55),
+    0 0 50px rgba(255, 78, 205, 0.45);
+  font-weight: 700;
+  font-size: clamp(1.85rem, 1.30rem + 1.6vw, 2.6rem);
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+:root[data-template="cosmos"] .card--featured .card__desc { color: rgba(255,255,255,0.85); }
+:root[data-template="cosmos"] .card--featured::after { color: #fff; }
+
+/* tags */
+:root[data-template="cosmos"] .tag {
+  border-radius: 999px;
+  border-color: rgba(180, 200, 255, 0.22);
+  background: rgba(122, 247, 255, 0.08);
+  color: var(--accent);
+  font-family: var(--display);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+}
+:root[data-template="cosmos"] .card:hover .tag {
+  border-color: var(--accent);
+  background: rgba(122, 247, 255, 0.16);
+}
+:root[data-template="cosmos"] .card--featured .tag {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.30);
+  color: #fff;
+}
+
+/* youtube */
+:root[data-template="cosmos"] .card--youtube { border-color: var(--rule); }
+:root[data-template="cosmos"] .yt__play {
+  background: rgba(5, 2, 17, 0.5);
+  border: 1.5px solid var(--accent);
+  box-shadow:
+    0 0 18px color-mix(in oklch, var(--accent) 50%, transparent),
+    inset 0 0 12px color-mix(in oklch, var(--accent) 30%, transparent);
+}
+:root[data-template="cosmos"] .yt__play svg { fill: var(--accent); }
+:root[data-template="cosmos"] .yt:hover .yt__play {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow:
+    0 0 30px var(--accent),
+    0 0 60px var(--accent-3);
+}
+:root[data-template="cosmos"] .yt:hover .yt__play svg { fill: var(--paper); }
+:root[data-template="cosmos"] .yt__title {
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-shadow: 0 0 12px rgba(122, 247, 255, 0.5);
+}
+
+/* portfolio */
+:root[data-template="cosmos"] .card--portfolio { border-color: var(--rule); }
+:root[data-template="cosmos"] .portfolio__caption {
+  border-top: 1px solid var(--rule);
+  background: rgba(14, 8, 38, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+:root[data-template="cosmos"] .portfolio__caption .card__title {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  background: linear-gradient(135deg, var(--ink) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+:root[data-template="cosmos"] .card--portfolio:hover .portfolio__caption .card__title {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* clients */
+:root[data-template="cosmos"] .client__logo {
+  border-radius: 14px;
+  border-color: var(--rule);
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(8px);
+}
+:root[data-template="cosmos"] .card--client:hover .client__logo {
+  border-color: var(--accent);
+  background: rgba(122, 247, 255, 0.08);
+  box-shadow:
+    0 0 24px color-mix(in oklch, var(--accent) 30%, transparent),
+    0 8px 22px -10px color-mix(in oklch, var(--accent) 40%, transparent);
+}
+:root[data-template="cosmos"] .client__logo[data-fallback] {
+  font-family: var(--display);
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 0 14px color-mix(in oklch, var(--accent) 60%, transparent);
+}
+:root[data-template="cosmos"] .client__title {
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: var(--fs-mini);
+  color: var(--ink-2);
+}
+:root[data-template="cosmos"] .card--client:hover .client__title { color: var(--accent); }
+
+/* footer */
+:root[data-template="cosmos"] .foot {
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-family: var(--display);
+  letter-spacing: 0.2em;
+}
+:root[data-template="cosmos"] .foot__mark {
+  font-family: var(--display);
+  font-weight: 900;
+  color: var(--accent);
+  text-shadow: 0 0 16px color-mix(in oklch, var(--accent) 60%, transparent);
+}
+
+/* selection */
+:root[data-template="cosmos"] ::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+:root[data-template="cosmos"] :focus-visible { outline-color: var(--accent); }
+
+/* reduced motion — strip glows + animations */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-template="cosmos"] .marker__brand .star,
+  :root[data-template="cosmos"] .hero__asterism,
+  :root[data-template="cosmos"] .section__head::after,
+  :root[data-template="cosmos"] .card::before {
+    animation: none !important;
+  }
+  :root[data-template="cosmos"] .cosmos-bg { display: none; }
+  :root[data-template="cosmos"].cosmos-static body {
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(176, 122, 255, 0.25), transparent 60%),
+      radial-gradient(ellipse at 70% 80%, rgba(122, 247, 255, 0.18), transparent 60%),
+      var(--paper);
+  }
+}

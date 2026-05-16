@@ -81,7 +81,7 @@ asset change.
 | field      | type   | values                          | description |
 |------------|--------|---------------------------------|-------------|
 | `accent`   | string | hex color, e.g. `"#E8482C"`     | Single sharp accent color used throughout. |
-| `template` | string | `"editorial"` (default) or `"swiss"` | Visual treatment. See [Templates](#templates). |
+| `template` | string | `"editorial"` (default), `"swiss"`, or `"cosmos"` | Visual treatment. See [Templates](#templates). |
 | `mode`     | string | unused; kept for future use     | Theme toggle (auto/light/dark) is controlled by the corner pill, not this field. |
 
 ### `sections`
@@ -366,10 +366,33 @@ Müller-Brockmann tribute. Akzidenz/Univers spirit with [Archivo](https://fonts.
 - **Cards:** invert on hover (white → solid black with paper text). Featured cards are solid red, invert to black on hover.
 - **Animations:** no spin, no italic — only sharp pop-in for the geometric mark
 
+### `"cosmos"`
+
+Interstellar / sci-fi treatment. Lit by a real WebGL fragment shader
+running in a fixed full-viewport canvas behind the page.
+
+- **Type:** Orbitron (variable sans display) + Geist for body
+- **Mood:** deep indigo paper, cyan + magenta + violet accents, dark-only
+  (the light/auto theme toggle is overridden — cosmos is always night)
+- **Background:** animated fractal-noise nebula with a procedural
+  two-layer starfield, subtle "gravity well" perturbation toward the
+  cursor, ~150 LOC GLSL fragment shader
+- **Cards:** glassmorphic with `backdrop-filter`, conic-gradient
+  holographic borders that rotate on hover (`@property --cosmos-hue`)
+- **Hero:** glowing chromatic-split last name on hover, drifting
+  light-orb in place of the asterism, gradient-clip wordmarks
+- **Fallbacks:** when WebGL is unavailable or
+  `prefers-reduced-motion: reduce` is set, a static CSS-only radial
+  nebula renders instead — and all heavy animations are disabled
+
 To switch:
 
 ```json
 "theme": { "accent": "#E8482C", "template": "swiss" }
+```
+
+```json
+"theme": { "template": "cosmos" }
 ```
 
 Choice is also cached in `localStorage` (`dlstack-template`) so reloads
