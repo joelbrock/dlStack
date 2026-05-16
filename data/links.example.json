@@ -90,6 +90,29 @@
         { "type": "link", "title": "An essay title goes here", "url": "#", "description": "Essay · 8 min read" },
         { "type": "link", "title": "Another piece of writing", "url": "#", "description": "Field notes" }
       ]
+    },
+    {
+      "id": "praise",
+      "label": "Testimonials",
+      "kicker": "What people say",
+      "layout": "testimonials",
+      "items": [
+        {
+          "type": "testimonial",
+          "quote": "Ada's notes on the Engine are the most penetrating remarks anyone has yet made on the subject of mechanical computation.",
+          "name": "Charles Babbage",
+          "role": "Mathematician",
+          "org": "Royal Society",
+          "date": "1843"
+        },
+        {
+          "type": "testimonial",
+          "quote": "She has thrown her thoughts into the form of a mathematical poem — an analytical instrument set in motion by the human mind.",
+          "name": "Michael Faraday",
+          "role": "Natural Philosopher",
+          "url": "https://example.com/faraday"
+        }
+      ]
     }
   ],
   "social": [

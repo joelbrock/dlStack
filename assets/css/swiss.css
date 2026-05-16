@@ -418,6 +418,50 @@
   letter-spacing: 0.08em;
 }
 
+/* ───── testimonial / carousel ───── */
+:root[data-template="swiss"] .card--testimonial { background: var(--paper-2); }
+:root[data-template="swiss"] .card--testimonial:hover { background: var(--paper-2); color: var(--ink); }
+:root[data-template="swiss"] .card--testimonial:hover .testimonial__quote,
+:root[data-template="swiss"] .card--testimonial:hover .testimonial__name { color: var(--ink); }
+:root[data-template="swiss"] .testimonial__mark {
+  font-family: var(--display);
+  font-style: normal;
+  font-weight: 900;
+  font-variation-settings: normal;
+  color: var(--accent);
+  line-height: 0.7;
+}
+:root[data-template="swiss"] .testimonial__quote {
+  font-family: var(--display);
+  font-style: normal;
+  font-weight: 500;
+  font-variation-settings: normal;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+:root[data-template="swiss"] .testimonial__by { border-top-color: var(--rule); }
+:root[data-template="swiss"] .testimonial__name {
+  font-family: var(--display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+:root[data-template="swiss"] .testimonial__meta {
+  font-family: var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+:root[data-template="swiss"] .testimonial__avatar { border-radius: 0; border: 0; }
+:root[data-template="swiss"] .carousel__viewport { border-radius: 0; }
+:root[data-template="swiss"] .carousel__nav {
+  border-radius: 0;
+  border-color: var(--rule);
+  font-family: var(--display);
+  font-weight: 700;
+}
+:root[data-template="swiss"] .carousel__nav:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+:root[data-template="swiss"] .carousel__dot.is-active { background: var(--accent); }
+
 /* selection */
 :root[data-template="swiss"] ::selection {
   background: var(--accent);

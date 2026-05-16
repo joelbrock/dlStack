@@ -101,18 +101,21 @@ An ordered array of groups. Each section renders with a numbered masthead
 
 #### Layouts
 
-| `layout`     | When to use                            | Grid behavior                          |
-|--------------|----------------------------------------|----------------------------------------|
-| *omitted*    | Default bento mix                      | 12-column asymmetric grid (link cards span 4/12, projects/youtube span 6/12, featured spans 8/12, portfolio spans 12/12) |
-| `"clients"`  | Logo wall of clients/partners          | Auto-flowing square tiles, `minmax(108–124px, 1fr)` |
+| `layout`         | When to use                            | Grid behavior                          |
+|------------------|----------------------------------------|----------------------------------------|
+| *omitted*        | Default bento mix                      | 12-column asymmetric grid (link cards span 4/12, projects/youtube span 6/12, featured spans 8/12, portfolio spans 12/12) |
+| `"clients"`      | Logo wall of clients/partners          | Auto-flowing square tiles, `minmax(108–124px, 1fr)` |
+| `"testimonials"` | Quotes from clients / collaborators    | Crossfade carousel — one quote at a time, auto-advancing every 7s, with prev/next nav, dot indicators, swipe + ←/→ keys, pause on hover/focus. Reduced-motion users see all quotes stacked. |
 
 `layout: "clients"` is also auto-detected if the first item in the section
-has `type: "client"`.
+has `type: "client"`. Same goes for `layout: "testimonials"` when the first
+item is `type: "testimonial"`.
 
 ### Items
 
 Every item lives in a section's `items` array and has a `type` field. The
-five available types are documented below.
+six available types are `link`, `card`, `youtube`, `client`, `portfolio`,
+and `testimonial` — documented below.
 
 #### Optional `date` (any item type)
 
@@ -228,6 +231,36 @@ below. Best in a section with `layout: "clients"`.
 | `url`   | no        | If present, the tile becomes a link. |
 | `image` | no        | Custom logo. If omitted, an auto-favicon is used (rendered at 60% of the tile, contained). |
 | `icon`  | no        | Alias for `image`. |
+
+#### `type: "testimonial"` — quote + attribution
+
+Best paired with `layout: "testimonials"` (see above) to render as a
+crossfade carousel. A section with a single testimonial just renders
+the card statically.
+
+```json
+{
+  "type": "testimonial",
+  "quote": "Working with Joel transformed how our co-op thinks about technology.",
+  "name": "Jane Doe",
+  "role": "Executive Director",
+  "org": "Example Cooperative",
+  "url": "https://example.coop",
+  "image": "https://example.coop/avatars/jane.jpg",
+  "date": "2025-09"
+}
+```
+
+| field   | required? | notes |
+|---------|-----------|-------|
+| `quote` | yes       | The quote body. Renders inside a `<blockquote>` with a large opening curly-quote mark above. |
+| `name`  | recommended | Person attributed. Bold below the quote. |
+| `role`  | no        | Job title (e.g. "CEO"). Combined with `org` as `"Role, Org"`. |
+| `org`   | no        | Company / organization. Combined with `role` if both present. |
+| `url`   | no        | If present, the whole card becomes a link (opens in new tab). |
+| `image` | no        | Avatar image URL. Square-cropped to a 44px circle. If omitted but `url` is present, an auto-favicon is fetched as a tiny round mark instead. |
+| `icon`  | no        | Alias for `image`. |
+| `date`  | no        | Optional date. Format per the [date field](#optional-date-any-item-type). |
 
 #### `type: "portfolio"` — wide design/showcase
 

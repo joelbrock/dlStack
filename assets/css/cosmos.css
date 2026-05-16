@@ -570,6 +570,57 @@
   text-shadow: 0 0 16px color-mix(in oklch, var(--accent) 60%, transparent);
 }
 
+/* ───── testimonial / carousel ───── */
+:root[data-template="cosmos"] .card--testimonial {
+  background: linear-gradient(135deg, rgba(30, 22, 64, 0.55), rgba(14, 8, 38, 0.55));
+}
+:root[data-template="cosmos"] .testimonial__mark {
+  color: var(--accent);
+  text-shadow:
+    0 0 18px color-mix(in oklch, var(--accent) 70%, transparent),
+    0 0 40px color-mix(in oklch, var(--accent-3) 50%, transparent);
+}
+:root[data-template="cosmos"] .testimonial__quote {
+  font-family: var(--body);
+  font-weight: 400;
+  font-variation-settings: normal;
+  color: var(--ink);
+}
+:root[data-template="cosmos"] .testimonial__by { border-top-color: var(--rule); }
+:root[data-template="cosmos"] .testimonial__name {
+  font-family: var(--display);
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+:root[data-template="cosmos"] .testimonial__meta {
+  font-family: var(--display);
+  letter-spacing: 0.10em;
+  color: var(--accent);
+}
+:root[data-template="cosmos"] .testimonial__avatar {
+  border-color: var(--rule);
+  background: rgba(255,255,255,0.04);
+}
+:root[data-template="cosmos"] .carousel__nav {
+  background: rgba(20, 14, 50, 0.5);
+  backdrop-filter: blur(8px);
+  border-color: var(--rule);
+  color: var(--ink-2);
+  font-family: var(--display);
+}
+:root[data-template="cosmos"] .carousel__nav:hover {
+  background: rgba(122, 247, 255, 0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px color-mix(in oklch, var(--accent) 40%, transparent);
+}
+:root[data-template="cosmos"] .carousel__dot { background: var(--rule); }
+:root[data-template="cosmos"] .carousel__dot.is-active {
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
 /* selection */
 :root[data-template="cosmos"] ::selection {
   background: var(--accent);

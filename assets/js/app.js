@@ -110,18 +110,62 @@
       </${tag}>`;
   }
 
+  function renderTestimonial(it) {
+    const tag = it.url ? "a" : "div";
+    const attrs = it.url ? `href="${esc(it.url)}" target="_blank" rel="noopener noreferrer"` : "";
+    const avatar = it.image || it.icon || (it.url ? faviconFor(it.url) : "");
+    const isFavicon = !(it.image || it.icon);
+    const initial = (it.name || it.org || "·").trim().charAt(0).toUpperCase();
+    const meta = [it.role, it.org].filter(Boolean).join(", ");
+    return `
+      <${tag} class="card card--testimonial reveal" ${attrs}>
+        <span class="testimonial__mark" aria-hidden="true">&ldquo;</span>
+        <blockquote class="testimonial__quote">${esc(it.quote)}</blockquote>
+        <figcaption class="testimonial__by">
+          ${avatar ? `<span class="testimonial__avatar"><img loading="lazy" alt="" src="${esc(avatar)}" data-fallback-initial="${esc(initial)}"${isFavicon ? ' class="is-favicon"' : ""}></span>` : ""}
+          <span class="testimonial__attr">
+            ${it.name ? `<span class="testimonial__name">${esc(it.name)}</span>` : ""}
+            ${meta ? `<span class="testimonial__meta">${esc(meta)}</span>` : ""}
+            ${dateMarkup(it)}
+          </span>
+        </figcaption>
+      </${tag}>`;
+  }
+
   const renderItem = (it) =>
-    it.type === "youtube"   ? renderYouTube(it) :
-    it.type === "card"      ? renderProject(it) :
-    it.type === "client"    ? renderClient(it) :
-    it.type === "portfolio" ? renderPortfolio(it) :
-                              renderLink(it);
+    it.type === "youtube"     ? renderYouTube(it) :
+    it.type === "card"        ? renderProject(it) :
+    it.type === "client"      ? renderClient(it) :
+    it.type === "portfolio"   ? renderPortfolio(it) :
+    it.type === "testimonial" ? renderTestimonial(it) :
+                                renderLink(it);
 
   function renderSection(sec, n) {
     const items = (sec.items || []).map(renderItem).join("");
     const num = String(n).padStart(2, "0");
-    const isClients = sec.layout === "clients" || sec.items?.[0]?.type === "client";
-    const gridClass = isClients ? "grid--clients" : "grid";
+    const isClients      = sec.layout === "clients"      || sec.items?.[0]?.type === "client";
+    const isTestimonials = sec.layout === "testimonials" || sec.items?.[0]?.type === "testimonial";
+    let body;
+    if (isTestimonials) {
+      const count = (sec.items || []).length;
+      const dots = Array.from({ length: count }, (_, i) =>
+        `<button type="button" class="carousel__dot${i === 0 ? " is-active" : ""}" aria-label="Show testimonial ${i + 1} of ${count}" data-slide="${i}"></button>`).join("");
+      body = `
+        <div class="carousel" data-carousel data-count="${count}">
+          <div class="carousel__viewport">
+            <div class="carousel__track" aria-live="polite">${items}</div>
+          </div>
+          ${count > 1 ? `
+          <div class="carousel__controls">
+            <button type="button" class="carousel__nav carousel__nav--prev" aria-label="Previous testimonial">‹</button>
+            <div class="carousel__dots" role="tablist">${dots}</div>
+            <button type="button" class="carousel__nav carousel__nav--next" aria-label="Next testimonial">›</button>
+          </div>` : ""}
+        </div>`;
+    } else {
+      const gridClass = isClients ? "grid--clients" : "grid";
+      body = `<div class="${gridClass}">${items}</div>`;
+    }
     return `
       <section class="section">
         <header class="section__head">
@@ -134,7 +178,7 @@
             ${sec.kicker ? `<span class="section__kicker">${esc(sec.kicker)}</span>` : ""}
           </div>
         </header>
-        <div class="${gridClass}">${items}</div>
+        ${body}
       </section>`;
   }
 
@@ -411,6 +455,57 @@
     requestAnimationFrame(loop);
   }
 
+  function attachCarousels(root) {
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    $$("[data-carousel]", root).forEach((car) => {
+      const slides = $$(".carousel__track > *", car);
+      const dots   = $$(".carousel__dot", car);
+      if (slides.length <= 1) { slides.forEach((s) => s.classList.add("is-active")); return; }
+      if (reduced) { car.classList.add("carousel--stacked"); slides.forEach((s) => s.classList.add("is-active")); return; }
+
+      let i = 0;
+      const show = (n) => {
+        i = (n + slides.length) % slides.length;
+        slides.forEach((s, k) => s.classList.toggle("is-active", k === i));
+        dots.forEach((d, k) => d.classList.toggle("is-active", k === i));
+      };
+      show(0);
+
+      let timer = 0;
+      const ADVANCE_MS = 7000;
+      const play = () => { stop(); timer = setInterval(() => show(i + 1), ADVANCE_MS); };
+      const stop = () => { if (timer) { clearInterval(timer); timer = 0; } };
+
+      car.addEventListener("pointerenter", stop);
+      car.addEventListener("pointerleave", play);
+      car.addEventListener("focusin", stop);
+      car.addEventListener("focusout", play);
+      document.addEventListener("visibilitychange", () => { document.hidden ? stop() : play(); });
+
+      $(".carousel__nav--prev", car)?.addEventListener("click", () => { show(i - 1); play(); });
+      $(".carousel__nav--next", car)?.addEventListener("click", () => { show(i + 1); play(); });
+      dots.forEach((d) => d.addEventListener("click", () => { show(Number(d.dataset.slide)); play(); }));
+
+      car.tabIndex = 0;
+      car.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft")  { e.preventDefault(); show(i - 1); play(); }
+        if (e.key === "ArrowRight") { e.preventDefault(); show(i + 1); play(); }
+      });
+
+      let touchX = null;
+      car.addEventListener("touchstart", (e) => { touchX = e.changedTouches[0].clientX; }, { passive: true });
+      car.addEventListener("touchend",   (e) => {
+        if (touchX === null) return;
+        const dx = e.changedTouches[0].clientX - touchX;
+        if (Math.abs(dx) > 40) show(dx < 0 ? i + 1 : i - 1);
+        touchX = null;
+        play();
+      });
+
+      play();
+    });
+  }
+
   function attachReveal(root) {
     if (!("IntersectionObserver" in window)) {
       $$(".reveal", root).forEach(el => el.classList.add("in"));
@@ -494,6 +589,7 @@
 
     attachFaviconFallback(app);
     attachYouTube(app);
+    attachCarousels(app);
     attachReveal(app);
     attachTheme();
   }
