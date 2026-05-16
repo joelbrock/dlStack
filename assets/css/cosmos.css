@@ -572,7 +572,9 @@
 
 /* ───── testimonial / carousel ───── */
 :root[data-template="cosmos"] .card--testimonial {
-  background: linear-gradient(135deg, rgba(30, 22, 64, 0.55), rgba(14, 8, 38, 0.55));
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 :root[data-template="cosmos"] .testimonial__mark {
   color: var(--accent);

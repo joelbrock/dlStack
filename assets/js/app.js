@@ -155,19 +155,13 @@
     let body;
     if (isTestimonials) {
       const count = (sec.items || []).length;
-      const dots = Array.from({ length: count }, (_, i) =>
-        `<button type="button" class="carousel__dot${i === 0 ? " is-active" : ""}" aria-label="Show testimonial ${i + 1} of ${count}" data-slide="${i}"></button>`).join("");
       body = `
-        <div class="carousel" data-carousel data-count="${count}">
+        <div class="carousel carousel--inline" data-carousel data-count="${count}">
+          ${count > 1 ? `<button type="button" class="carousel__nav carousel__nav--prev" aria-label="Previous testimonial">‹</button>` : ""}
           <div class="carousel__viewport">
             <div class="carousel__track" aria-live="polite">${items}</div>
           </div>
-          ${count > 1 ? `
-          <div class="carousel__controls">
-            <button type="button" class="carousel__nav carousel__nav--prev" aria-label="Previous testimonial">‹</button>
-            <div class="carousel__dots" role="tablist">${dots}</div>
-            <button type="button" class="carousel__nav carousel__nav--next" aria-label="Next testimonial">›</button>
-          </div>` : ""}
+          ${count > 1 ? `<button type="button" class="carousel__nav carousel__nav--next" aria-label="Next testimonial">›</button>` : ""}
         </div>`;
     } else {
       const gridClass = isClients ? "grid--clients" : "grid";
@@ -475,6 +469,7 @@
         i = (n + slides.length) % slides.length;
         slides.forEach((s, k) => s.classList.toggle("is-active", k === i));
         dots.forEach((d, k) => d.classList.toggle("is-active", k === i));
+        car.setAttribute("aria-label", `Testimonial ${i + 1} of ${slides.length}`);
       };
       show(0);
 

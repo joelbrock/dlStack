@@ -419,8 +419,8 @@
 }
 
 /* ───── testimonial / carousel ───── */
-:root[data-template="swiss"] .card--testimonial { background: var(--paper-2); }
-:root[data-template="swiss"] .card--testimonial:hover { background: var(--paper-2); color: var(--ink); }
+:root[data-template="swiss"] .card--testimonial { background: transparent; }
+:root[data-template="swiss"] .card--testimonial:hover { background: transparent; color: var(--ink); }
 :root[data-template="swiss"] .card--testimonial:hover .testimonial__quote,
 :root[data-template="swiss"] .card--testimonial:hover .testimonial__name { color: var(--ink); }
 :root[data-template="swiss"] .testimonial__mark {

@@ -479,6 +479,12 @@ body::before {
 
 /* ───── carousel (testimonials) ───── */
 .carousel { position: relative; }
+.carousel--inline {
+  display: flex; align-items: center;
+  gap: clamp(0.5rem, 2vw, 1.5rem);
+  padding: 0 clamp(0.5rem, 3vw, 2rem);
+}
+.carousel--inline .carousel__viewport { flex: 1 1 0; min-width: 0; }
 .carousel__viewport {
   position: relative;
   overflow: hidden;
@@ -542,25 +548,38 @@ body::before {
 .carousel__dot:hover { background: var(--ink-2); }
 .carousel__dot.is-active { background: var(--accent); transform: scale(1.35); }
 
-/* ───── testimonial card ───── */
+/* ───── testimonial — "of the page", no chrome ───── */
 .card--testimonial {
-  padding: clamp(1.75rem, 3vw, 3rem) clamp(1.5rem, 4vw, 3.5rem);
+  padding: 0.5rem 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
   display: flex; flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 1.25rem;
-  min-height: clamp(220px, 24vw, 300px);
+  gap: 0.85rem;
+  min-height: 0;
+  isolation: auto;
 }
-.card--testimonial::after { display: none; }
+.card--testimonial:hover {
+  transform: none;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.card--testimonial::after,
+.card--testimonial::before { display: none; }
 .testimonial__mark {
   font-family: var(--display);
-  font-size: clamp(4rem, 6vw, 6rem);
-  line-height: 0.6;
+  font-size: clamp(2.5rem, 3.5vw, 3.5rem);
+  line-height: 0.55;
   color: var(--accent);
   font-style: italic;
   font-variation-settings: "opsz" 144, "SOFT" 100;
   font-weight: 400;
   user-select: none;
+  opacity: 0.85;
 }
 .testimonial__quote {
   font-family: var(--display);
@@ -598,16 +617,15 @@ body::before {
 }
 
 .testimonial__by {
-  display: flex; align-items: center; justify-content: center; gap: 0.85rem;
-  margin-top: auto;
-  padding-top: 0.85rem;
-  border-top: 1px solid var(--rule);
-  width: 100%;
-  max-width: 32rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: auto;
 }
 .testimonial__avatar {
   flex: 0 0 auto;
-  width: 44px; height: 44px;
+  width: 32px; height: 32px;
   border-radius: 50%;
   overflow: hidden;
   background: var(--paper-2);
