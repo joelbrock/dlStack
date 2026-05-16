@@ -493,16 +493,15 @@ body::before {
   grid-area: stack;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(8px);
-  transition: opacity 600ms var(--ease-strong), transform 600ms var(--ease-strong), visibility 0s linear 600ms;
+  transition: opacity 1100ms cubic-bezier(0.65, 0, 0.35, 1), visibility 0s linear 1100ms;
   pointer-events: none;
+  will-change: opacity;
 }
 .carousel__track > .is-active {
   opacity: 1;
   visibility: visible;
-  transform: none;
   pointer-events: auto;
-  transition: opacity 600ms var(--ease-strong), transform 600ms var(--ease-strong), visibility 0s;
+  transition: opacity 1100ms cubic-bezier(0.65, 0, 0.35, 1), visibility 0s;
 }
 .carousel--stacked .carousel__track {
   display: flex;
@@ -545,9 +544,11 @@ body::before {
 
 /* ───── testimonial card ───── */
 .card--testimonial {
-  padding: clamp(1.75rem, 3vw, 2.75rem);
+  padding: clamp(1.75rem, 3vw, 3rem) clamp(1.5rem, 4vw, 3.5rem);
   display: flex; flex-direction: column;
-  gap: 1.5rem;
+  align-items: center;
+  text-align: center;
+  gap: 1.25rem;
   min-height: clamp(220px, 24vw, 300px);
 }
 .card--testimonial::after { display: none; }
@@ -559,25 +560,50 @@ body::before {
   font-style: italic;
   font-variation-settings: "opsz" 144, "SOFT" 100;
   font-weight: 400;
-  align-self: start;
   user-select: none;
 }
 .testimonial__quote {
   font-family: var(--display);
-  font-size: clamp(1.15rem, 0.95rem + 0.7vw, 1.45rem);
-  line-height: 1.45;
+  font-size: var(--quote-fs, clamp(1.2rem, 0.95rem + 0.85vw, 1.55rem));
+  line-height: var(--quote-lh, 1.45);
   font-weight: 400;
   font-variation-settings: "opsz" 60, "SOFT" 100;
   color: var(--ink);
   margin: 0;
   letter-spacing: -0.005em;
-  max-width: 60ch;
+  max-width: 64ch;
+  text-wrap: balance;
 }
+
+/* length-driven scale: shorter quotes get the spotlight, longer ones tighten */
+.card--testimonial.is-xshort {
+  --quote-fs: clamp(1.85rem, 1.2rem + 2.4vw, 3rem);
+  --quote-lh: 1.20;
+}
+.card--testimonial.is-short {
+  --quote-fs: clamp(1.5rem, 1.05rem + 1.7vw, 2.25rem);
+  --quote-lh: 1.30;
+}
+.card--testimonial.is-medium {
+  --quote-fs: clamp(1.2rem, 0.95rem + 0.85vw, 1.55rem);
+  --quote-lh: 1.45;
+}
+.card--testimonial.is-long {
+  --quote-fs: clamp(1.05rem, 0.95rem + 0.35vw, 1.20rem);
+  --quote-lh: 1.55;
+}
+.card--testimonial.is-xlong {
+  --quote-fs: clamp(0.95rem, 0.92rem + 0.18vw, 1.05rem);
+  --quote-lh: 1.6;
+}
+
 .testimonial__by {
-  display: flex; align-items: center; gap: 0.85rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.85rem;
   margin-top: auto;
-  padding-top: 0.5rem;
+  padding-top: 0.85rem;
   border-top: 1px solid var(--rule);
+  width: 100%;
+  max-width: 32rem;
 }
 .testimonial__avatar {
   flex: 0 0 auto;
@@ -590,7 +616,7 @@ body::before {
 }
 .testimonial__avatar img { width: 100%; height: 100%; object-fit: cover; }
 .testimonial__avatar img.is-favicon { width: 60%; height: 60%; object-fit: contain; }
-.testimonial__attr { display: flex; flex-direction: column; gap: 0.1rem; line-height: 1.3; min-width: 0; }
+.testimonial__attr { display: flex; flex-direction: column; gap: 0.1rem; line-height: 1.3; min-width: 0; text-align: left; }
 .testimonial__name {
   font-family: var(--body);
   font-weight: 600;

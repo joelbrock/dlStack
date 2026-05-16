@@ -117,8 +117,15 @@
     const isFavicon = !(it.image || it.icon);
     const initial = (it.name || it.org || "·").trim().charAt(0).toUpperCase();
     const meta = [it.role, it.org].filter(Boolean).join(", ");
+    const len = [...String(it.quote || "")].length;
+    const lengthClass =
+      len <= 90  ? " is-xshort" :
+      len <= 180 ? " is-short"  :
+      len <= 320 ? " is-medium" :
+      len <= 520 ? " is-long"   :
+                   " is-xlong";
     return `
-      <${tag} class="card card--testimonial reveal" ${attrs}>
+      <${tag} class="card card--testimonial reveal${lengthClass}" ${attrs}>
         <span class="testimonial__mark" aria-hidden="true">&ldquo;</span>
         <blockquote class="testimonial__quote">${esc(it.quote)}</blockquote>
         <figcaption class="testimonial__by">
