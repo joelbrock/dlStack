@@ -439,6 +439,21 @@ To switch:
 Choice is also cached in `localStorage` (`dlstack-template`) so reloads
 don't flash the wrong template before JSON parses.
 
+### Overriding the template at view time
+
+Two ways to ride a different template without touching `links.json`:
+
+1. **URL parameter** — `?template=editorial`, `?template=swiss`, or
+   `?template=cosmos` always wins over the JSON value, so links like
+   `https://your.site/?template=cosmos` are shareable.
+2. **Easter egg** — type `warp` anywhere on the page (no input field
+   focused). The page reloads on the next template in the cycle and a
+   small `↯ <name>` toast confirms it. The URL is updated with the new
+   `?template=` param.
+
+Drop the URL param (or refresh from a clean URL) to return to whatever
+`theme.template` says in `data/links.json`.
+
 ## Theme (light / dark / auto)
 
 A small pill in the top-right cycles **Auto → Light → Dark → Auto** on

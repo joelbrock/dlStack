@@ -22,12 +22,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=DM+Serif+Display:ital@0;1&family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..600,30..100,0..1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
 
   <script>
-    // Apply saved theme + template before paint to avoid flash
+    // Apply saved theme + template before paint to avoid flash.
+    // URL ?template=… wins over the cached value so deep links work.
     try {
       var t = localStorage.getItem("dlstack-theme");
       if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
-      var tpl = localStorage.getItem("dlstack-template");
-      if (tpl === "swiss" || tpl === "editorial" || tpl === "cosmos") document.documentElement.dataset.template = tpl;
+      var qtpl = null;
+      try { qtpl = new URL(location.href).searchParams.get("template"); } catch (e) {}
+      if (qtpl === "swiss" || qtpl === "editorial" || qtpl === "cosmos") {
+        document.documentElement.dataset.template = qtpl;
+      } else {
+        var tpl = localStorage.getItem("dlstack-template");
+        if (tpl === "swiss" || tpl === "editorial" || tpl === "cosmos") document.documentElement.dataset.template = tpl;
+      }
     } catch (e) {}
   </script>
 

@@ -153,43 +153,6 @@
   transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* galactic space turtle — floats in from the left, dips, then back out */
-:root[data-template="cosmos"] .cosmos-turtle {
-  position: fixed;
-  top: clamp(48px, 9vh, 110px);
-  left: 0;
-  width: clamp(140px, 16vw, 240px);
-  height: auto;
-  z-index: 3;
-  pointer-events: none;
-  opacity: 0;
-  filter:
-    drop-shadow(0 0 22px rgba(122, 247, 255, 0.55))
-    drop-shadow(0 0 48px rgba(176, 122, 255, 0.45))
-    drop-shadow(0 0 80px rgba(255,  78, 205, 0.25));
-  animation:
-    cosmos-turtle-cycle 28s 2s linear infinite,
-    cosmos-turtle-bob   4s ease-in-out infinite;
-  will-change: transform, opacity;
-}
-@keyframes cosmos-turtle-cycle {
-  0%   { transform: translate(-25vw, 0)   rotate(-6deg); opacity: 0; }
-  6%   { opacity: 1; }
-  45%  { transform: translate(45vw, -4vh) rotate(4deg);  opacity: 1; }
-  88%  { transform: translate(112vw, 0)   rotate(8deg);  opacity: 1; }
-  93%  { opacity: 0; }
-  100% { transform: translate(112vw, 0)   rotate(8deg);  opacity: 0; }
-}
-@keyframes cosmos-turtle-bob {
-  0%, 100% { filter:
-    drop-shadow(0 0 22px rgba(122, 247, 255, 0.55))
-    drop-shadow(0 0 48px rgba(176, 122, 255, 0.45))
-    drop-shadow(0 0 80px rgba(255,  78, 205, 0.25)); }
-  50%      { filter:
-    drop-shadow(0 0 32px rgba(122, 247, 255, 0.75))
-    drop-shadow(0 0 64px rgba(176, 122, 255, 0.60))
-    drop-shadow(0 0 110px rgba(255, 78, 205, 0.40)); }
-}
 
 /* CSS-only static fallback nebula when WebGL is unavailable */
 :root[data-template="cosmos"].cosmos-static body {
@@ -775,18 +738,13 @@
   :root[data-template="cosmos"] .hero__asterism,
   :root[data-template="cosmos"] .section__head::after,
   :root[data-template="cosmos"] .card::before,
-  :root[data-template="cosmos"] .cosmos-comet,
-  :root[data-template="cosmos"] .cosmos-turtle {
+  :root[data-template="cosmos"] .cosmos-comet {
     animation: none !important;
     transition: none !important;
   }
   :root[data-template="cosmos"] .cosmos-bg,
   :root[data-template="cosmos"] .cosmos-halo,
   :root[data-template="cosmos"] .cosmos-comet { display: none; }
-  :root[data-template="cosmos"] .cosmos-turtle {
-    opacity: 1;
-    transform: translate(2vw, 0) rotate(-2deg);
-  }
   :root[data-template="cosmos"] .hero__name,
   :root[data-template="cosmos"] .hero__tagline,
   :root[data-template="cosmos"] .hero__asterism { transform: none !important; }

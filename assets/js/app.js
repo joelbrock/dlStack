@@ -284,10 +284,9 @@
     });
   }
 
-  function bootCosmos(theme) {
+  function bootCosmos() {
     const root = document.documentElement;
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    attachCosmosTurtle(theme);
     if (reducedMotion) { root.classList.add("cosmos-static"); return; }
     attachCosmosCursor();
     attachCosmosComets();
@@ -566,19 +565,44 @@
     });
   }
 
-  function attachCosmosTurtle(theme) {
-    const src = (theme && theme.turtle) || "assets/img/turtle.png";
-    const probe = new Image();
-    probe.onload = () => {
-      const t = document.createElement("img");
-      t.src = src;
-      t.alt = "";
-      t.className = "cosmos-turtle";
-      t.setAttribute("aria-hidden", "true");
-      document.body.appendChild(t);
-    };
-    probe.onerror = () => {};
-    probe.src = src;
+  function attachWarpEgg() {
+    const order = ["editorial", "swiss", "cosmos"];
+    let buf = "";
+    const KEY = "warp";
+
+    document.addEventListener("keydown", (e) => {
+      const tgt = e.target;
+      if (tgt && tgt.matches && tgt.matches("input, textarea, [contenteditable]")) return;
+      if (!e.key || e.key.length !== 1) return;
+      buf = (buf + e.key.toLowerCase()).slice(-KEY.length);
+      if (buf !== KEY) return;
+      buf = "";
+      const cur = document.documentElement.dataset.template || "editorial";
+      const next = order[(order.indexOf(cur) + 1) % order.length];
+      try { sessionStorage.setItem("dlstack-warp-toast", next); } catch (err) {}
+      const url = new URL(location.href);
+      url.searchParams.set("template", next);
+      location.replace(url.toString());
+    });
+
+    let pending = null;
+    try { pending = sessionStorage.getItem("dlstack-warp-toast"); } catch (err) {}
+    if (!pending) return;
+    try { sessionStorage.removeItem("dlstack-warp-toast"); } catch (err) {}
+    const toast = document.createElement("div");
+    toast.className = "warp-toast";
+    toast.setAttribute("role", "status");
+    const arrow = document.createElement("span");
+    arrow.className = "warp-toast__arrow";
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.textContent = "↯";
+    const label = document.createElement("span");
+    label.className = "warp-toast__label";
+    label.textContent = pending;
+    toast.append(arrow, label);
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add("warp-toast--out"), 1600);
+    setTimeout(() => toast.remove(), 2500);
   }
 
   function attachCarousels(root) {
@@ -676,10 +700,14 @@
       document.documentElement.style.setProperty("--accent", data.theme.accent);
     }
     const validTpl = new Set(["editorial", "swiss", "cosmos"]);
-    const tpl = validTpl.has(data.theme?.template) ? data.theme.template : "editorial";
+    let urlTpl = null;
+    try { urlTpl = new URL(location.href).searchParams.get("template"); } catch (e) {}
+    const tpl = validTpl.has(urlTpl) ? urlTpl
+              : validTpl.has(data.theme?.template) ? data.theme.template
+              : "editorial";
     document.documentElement.dataset.template = tpl;
     try { localStorage.setItem("dlstack-template", tpl); } catch (e) {}
-    if (tpl === "cosmos") bootCosmos(data.theme || {});
+    if (tpl === "cosmos") bootCosmos();
 
     const p = data.profile || {};
     const sections = data.sections || [];
@@ -719,6 +747,7 @@
     attachCarousels(app);
     attachReveal(app);
     attachTheme();
+    attachWarpEgg();
   }
 
   if (document.readyState === "loading") {
