@@ -188,7 +188,11 @@ body::before {
 .section { margin-top: clamp(4rem, 7vw, 6rem); }
 .section--headless {
   /* nest visually under the previous section instead of starting a new one */
-  margin-top: clamp(1.25rem, 2.5vw, 2rem);
+  margin-top: clamp(2.75rem, 5vw, 4.5rem);
+}
+/* tighten the gap AFTER a headless section so the next section pulls back up */
+.section--headless + .section {
+  margin-top: clamp(2.25rem, 4vw, 3.5rem);
 }
 .section__head {
   display: grid;
@@ -416,7 +420,7 @@ body::before {
 
 /* client tile — square logo, caption below, no card chrome */
 .card--client {
-  padding: 0;
+  padding: 0 0 0.85rem;
   border: 0;
   background: transparent;
   display: flex; flex-direction: column;
