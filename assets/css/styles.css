@@ -37,6 +37,16 @@ a { color: inherit; text-decoration: none; }
   --radius: 14px;
   --ease:   cubic-bezier(0.22, 1, 0.36, 1);
   --ease-strong: cubic-bezier(0.16, 1, 0.30, 1);
+
+  /* spacing scale — semantic, fluid. Use these instead of ad-hoc clamps. */
+  --space-2xs: 0.25rem;
+  --space-xs:  0.5rem;
+  --space-sm:  0.75rem;
+  --space-md:  1rem;
+  --space-lg:  clamp(1.25rem, 1rem + 0.8vw, 1.75rem);
+  --space-xl:  clamp(2rem, 1.5rem + 1.4vw, 3rem);
+  --space-2xl: clamp(3rem, 2rem + 3vw, 5rem);
+  --space-3xl: clamp(4.5rem, 3rem + 5vw, 7.5rem);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -85,7 +95,7 @@ body::before {
 /* ───── marker bar ───── */
 .marker {
   display: flex; align-items: center; gap: 1rem;
-  padding: 1.25rem 0;
+  padding: var(--space-lg) 0 var(--space-md);
   border-bottom: 1px solid var(--rule);
   font: 500 var(--fs-mini)/1 var(--mono);
   text-transform: uppercase;
@@ -149,7 +159,7 @@ body::before {
   opacity: 0.95;
 }
 .hero__tagline {
-  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+  margin-top: var(--space-xl);
   font-family: var(--display);
   font-style: italic;
   font-weight: 400;
@@ -162,14 +172,15 @@ body::before {
 }
 .hero__tagline span { color: var(--accent); padding: 0 0.2em; }
 .hero__bio {
-  margin-top: 1.5rem;
+  /* paired with tagline — tight gap so they read as one thought */
+  margin-top: var(--space-sm);
   max-width: 48ch;
   color: var(--muted);
   font-size: var(--fs-md);
 }
 
-/* ───── social rail ───── */
-.social { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
+/* ───── social rail — separated from the bio so it reads as the action layer ───── */
+.social { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: var(--space-xl); }
 .social a {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 9px 16px;
@@ -185,7 +196,11 @@ body::before {
 .social svg { width: 16px; height: 16px; }
 
 /* ───── sections ───── */
-.section { margin-top: clamp(4rem, 7vw, 6rem); }
+.section { margin-top: var(--space-2xl); }
+/* opening beat — first section after the hero gets extra air, then the
+   rhythm settles into the regular cadence */
+.hero + .section,
+main > .section:first-child { margin-top: var(--space-3xl); }
 .section--headless {
   /* nest visually under the previous section instead of starting a new one */
   margin-top: clamp(2.75rem, 5vw, 4.5rem);
@@ -197,13 +212,13 @@ body::before {
 .section__head {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: clamp(1rem, 2.5vw, 2rem);
+  gap: clamp(1.25rem, 3vw, 2.5rem);
   align-items: end;
-  padding-bottom: 1rem;
-  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-xl);
   border-bottom: 2px solid var(--ink);
 }
-.section__numwrap { display: flex; flex-direction: column; gap: 0.2rem; align-self: end; }
+.section__numwrap { display: flex; flex-direction: column; gap: var(--space-2xs); align-self: end; }
 .section__numwrap small {
   font-family: var(--display);
   font-size: var(--fs-md);
@@ -230,11 +245,11 @@ body::before {
 }
 .section__title {
   font-family: var(--display);
-  font-weight: 350;
+  font-weight: 420;
   font-variation-settings: "opsz" 144, "SOFT" 30;
   font-size: var(--fs-xl);
   line-height: 0.95;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.028em;
   color: var(--ink);
 }
 .section__kicker {
