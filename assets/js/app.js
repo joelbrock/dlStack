@@ -60,8 +60,9 @@
   }
 
   function renderYouTube(it) {
+    const wide = it.featured ? " card--wide" : "";
     return `
-      <div class="card card--youtube reveal">
+      <div class="card card--youtube${wide} reveal">
         <div class="yt" role="button" tabindex="0" aria-label="Play: ${esc(it.title)}" data-yt="${esc(it.id)}" style="background-image:url('${esc(ytThumb(it.id))}')">
           <div class="yt__play" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>

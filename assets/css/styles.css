@@ -270,22 +270,28 @@ main > .section:first-child { margin-top: var(--space-3xl); }
 @media (min-width: 600px) {
   .grid > .card--link    { grid-column: span 6; }
   .grid > .card--project { grid-column: span 6; }
+  .grid > .card--youtube { grid-column: span 6; }
 }
 @media (min-width: 960px) {
   .grid > .card--link    { grid-column: span 4; }
   .grid > .card--project { grid-column: span 6; }
+  .grid > .card--youtube { grid-column: span 6; }
   .grid > .card--featured{ grid-column: span 8; }
 }
 
-/* portfolio + video items — full row on mobile, ~78% centered with extra breathing */
-.grid > .card--portfolio,
-.grid > .card--youtube {
+/* portfolio item — always full row, capped at 78% with breathing room */
+.grid > .card--portfolio {
+  grid-column: span 12;
+  margin-block: clamp(0.5rem, 1.5vw, 1.25rem);
+}
+/* featured/wide youtube — opt-in via `featured: true` in JSON */
+.grid > .card--youtube.card--wide {
   grid-column: span 12;
   margin-block: clamp(0.5rem, 1.5vw, 1.25rem);
 }
 @media (min-width: 700px) {
   .grid > .card--portfolio,
-  .grid > .card--youtube {
+  .grid > .card--youtube.card--wide {
     width: 100%;
     max-width: 78%;
     justify-self: center;

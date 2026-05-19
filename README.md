@@ -214,10 +214,11 @@ only loads when clicked, so the page stays fast even with many videos.
 }
 ```
 
-| field   | required? | notes |
-|---------|-----------|-------|
-| `id`    | yes       | YouTube video ID (the `v=` parameter from the URL). |
-| `title` | yes       | Shown over the thumbnail and as the iframe's accessible title. |
+| field      | required? | notes |
+|------------|-----------|-------|
+| `id`       | yes       | YouTube video ID (the `v=` parameter from the URL). |
+| `title`    | yes       | Shown over the thumbnail and as the iframe's accessible title. |
+| `featured` | no        | When `true`, the video card spans the full row at 78% max-width centered (like a portfolio plate). Default layout is 2-per-row on tablet+. Use sparingly to promote a hero video. |
 
 #### `type: "client"` — logo tile
 
