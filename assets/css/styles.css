@@ -279,8 +279,17 @@ main > .section:first-child { margin-top: var(--space-3xl); }
   .grid > .card--featured{ grid-column: span 8; }
 }
 
-/* portfolio item — always full row */
-.grid > .card--portfolio { grid-column: span 12; }
+/* portfolio item — full row on mobile, ~78% centered with breathing room above */
+.grid > .card--portfolio {
+  grid-column: span 12;
+  margin-block: clamp(0.5rem, 1.5vw, 1.25rem);
+}
+@media (min-width: 700px) {
+  .grid > .card--portfolio {
+    max-width: 78%;
+    justify-self: center;
+  }
+}
 
 /* clients grid — auto-flowing square tiles */
 .grid--clients {
