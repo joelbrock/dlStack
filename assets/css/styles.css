@@ -270,22 +270,22 @@ main > .section:first-child { margin-top: var(--space-3xl); }
 @media (min-width: 600px) {
   .grid > .card--link    { grid-column: span 6; }
   .grid > .card--project { grid-column: span 6; }
-  .grid > .card--youtube { grid-column: span 6; }
 }
 @media (min-width: 960px) {
   .grid > .card--link    { grid-column: span 4; }
   .grid > .card--project { grid-column: span 6; }
-  .grid > .card--youtube { grid-column: span 6; }
   .grid > .card--featured{ grid-column: span 8; }
 }
 
-/* portfolio item — full row on mobile, ~78% centered with breathing room above */
-.grid > .card--portfolio {
+/* portfolio + video items — full row on mobile, ~78% centered with extra breathing */
+.grid > .card--portfolio,
+.grid > .card--youtube {
   grid-column: span 12;
   margin-block: clamp(0.5rem, 1.5vw, 1.25rem);
 }
 @media (min-width: 700px) {
-  .grid > .card--portfolio {
+  .grid > .card--portfolio,
+  .grid > .card--youtube {
     max-width: 78%;
     justify-self: center;
   }
