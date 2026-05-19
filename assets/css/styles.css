@@ -286,6 +286,7 @@ main > .section:first-child { margin-top: var(--space-3xl); }
 @media (min-width: 700px) {
   .grid > .card--portfolio,
   .grid > .card--youtube {
+    width: 100%;
     max-width: 78%;
     justify-self: center;
   }
