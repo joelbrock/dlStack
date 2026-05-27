@@ -4,13 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "data/links.json"
       - "data/links.example.json"
       - "data/links.schema.json"
       - ".github/workflows/validate-data.yml"
   pull_request:
     paths:
-      - "data/links.json"
       - "data/links.example.json"
       - "data/links.schema.json"
       - ".github/workflows/validate-data.yml"
@@ -24,7 +22,8 @@ jobs:
       - name: JSON syntax (jq)
         run: |
           set -e
-          for f in data/links.json data/links.example.json data/links.schema.json; do
+          # data/links.json is gitignored (personal content); only validate what's tracked.
+          for f in data/links.example.json data/links.schema.json; do
             echo "Checking $f"
             jq empty "$f"
           done
@@ -35,5 +34,4 @@ jobs:
             --spec=draft2020 \
             --strict=false \
             -s data/links.schema.json \
-            -d data/links.json \
             -d data/links.example.json
