@@ -48,15 +48,49 @@
 
   function renderProject(it) {
     const featured = it.featured ? " card--featured" : "";
+    const tags = (it.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("");
+    const repo = repoLinkMarkup(it.repo);
+
+    if (repo) {
+      const titleTag = it.url ? "a" : "span";
+      const titleAttrs = it.url ? `href="${esc(it.url)}" target="_blank" rel="noopener noreferrer"` : "";
+      return `
+        <div class="card card--project${featured} card--has-repo reveal">
+          ${repo}
+          <${titleTag} class="card__title card__title--link" ${titleAttrs}>${esc(it.title)}</${titleTag}>
+          ${it.description ? `<p class="card__desc">${esc(it.description)}</p>` : ""}
+          ${(tags || it.date) ? `<div class="tags">${tags}${dateMarkup(it)}</div>` : ""}
+        </div>`;
+    }
+
     const tag = it.url ? "a" : "div";
     const attrs = it.url ? `href="${esc(it.url)}" target="_blank" rel="noopener noreferrer"` : "";
-    const tags = (it.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("");
     return `
       <${tag} class="card card--project${featured} reveal" ${attrs}>
         <span class="card__title">${esc(it.title)}</span>
         ${it.description ? `<p class="card__desc">${esc(it.description)}</p>` : ""}
         ${(tags || it.date) ? `<div class="tags">${tags}${dateMarkup(it)}</div>` : ""}
       </${tag}>`;
+  }
+
+  function repoKind(url) {
+    const h = hostOf(url).toLowerCase();
+    if (!h) return null;
+    if (h === "github.com" || h.endsWith(".github.com")) return "github";
+    if (h === "bitbucket.org" || h.endsWith(".bitbucket.org")) return "bitbucket";
+    return "gitea";
+  }
+
+  function repoLinkMarkup(url) {
+    if (!url) return "";
+    const kind = repoKind(url);
+    if (!kind) return "";
+    const host = hostOf(url);
+    const label = kind === "github" ? "View source on GitHub"
+                : kind === "bitbucket" ? "View source on Bitbucket"
+                : `View source (${host})`;
+    const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M6 8v8"/><path d="M18 8a4 4 0 0 1-4 4H6"/></svg>`;
+    return `<a class="card__repo" href="${esc(url)}" target="_blank" rel="noopener noreferrer" title="${esc(label)}" aria-label="${esc(label)}" data-repo-kind="${kind}">${icon}</a>`;
   }
 
   function renderYouTube(it) {
@@ -736,7 +770,7 @@
       <main>${sections.map((s, i) => renderSection(s, i + 1)).join("")}</main>
 
       <footer class="foot">
-        <span>${esc(data.footer?.copy || "")}</span>
+        <span>${esc(data.footer?.copy || "")}${data.footer?.editUrl ? ` <a class="foot__edit" href="${esc(data.footer.editUrl)}" target="_blank" rel="noopener noreferrer" title="Edit this site's content on GitHub">Edit on GitHub ↗</a>` : ""}</span>
         <span class="foot__mark" aria-hidden="true">— ✱ —</span>
         <span class="foot__right">© ${new Date().getFullYear()} ${esc(p.name || "")}</span>
       </footer>

@@ -1,4 +1,5 @@
 {
+  "$schema": "./links.schema.json",
   "profile": {
     "name": "Ada Lovelace",
     "handle": "@ada",
@@ -39,6 +40,7 @@
           "type": "card",
           "title": "Bernoulli Numbers",
           "url": "https://example.com/projects/bernoulli",
+          "repo": "https://github.com/example/bernoulli",
           "description": "Method for computing Bernoulli numbers using the Engine.",
           "tags": ["mathematics"],
           "date": "1843-07"

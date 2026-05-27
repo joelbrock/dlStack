@@ -187,16 +187,18 @@ Bigger, prose-friendly card with tags.
   "type": "card",
   "title": "CoVote",
   "url": "https://covote.org",
+  "repo": "https://github.com/covote/covote",  // optional — adds a git icon in the corner
   "description": "Anonymous election platform for co-ops.",
   "tags": ["democracy", "co-ops"],
-  "featured": true                           // optional — makes it the hero card
+  "featured": true                             // optional — makes it the hero card
 }
 ```
 
 | field         | required? | notes |
 |---------------|-----------|-------|
 | `title`       | yes       | Serif headline (Fraunces in editorial; Archivo 900 caps in Swiss). |
-| `url`         | no        | If present, the card becomes a link. |
+| `url`         | no        | If present, the title becomes a link. |
+| `repo`        | no        | Optional secondary link to the project's source repository. Renders a small git icon in the top-right corner. Supports `github.com`, `bitbucket.org`, and Gitea/self-hosted URLs. When set, the card is no longer wrapped in a single anchor — the title is the primary link, the icon is the secondary. |
 | `description` | no        | Paragraph under the title. |
 | `tags`        | no        | Array of strings — small monospaced chips. |
 | `featured`    | no        | When `true`, card spans 8/12 columns AND fills with the accent color (paper text on vermilion). Use sparingly — one per section. |

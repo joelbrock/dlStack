@@ -345,8 +345,8 @@ main > .section:first-child { margin-top: var(--space-3xl); }
 .card--link .favicon img { width: 100%; height: 100%; object-fit: cover; }
 .card--link .favicon img.is-favicon { width: 44px; height: 44px; object-fit: contain; }
 .card--link .favicon[data-fallback] { font-family: var(--display); font-weight: 500; font-size: 1.7rem; color: var(--ink); }
-.card__title { font-weight: 540; letter-spacing: -0.005em; line-height: 1.25; }
-.card__desc  { color: var(--muted); font-size: var(--fs-sm); }
+.card__title { display: block; font-weight: 540; letter-spacing: -0.005em; line-height: 1.25; }
+.card__desc  { display: block; color: var(--muted); font-size: var(--fs-sm); }
 .card__host  { font-family: var(--mono); font-size: var(--fs-mini); color: var(--muted); text-transform: lowercase; }
 .card__meta  { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.8rem; margin-top: 0.2rem; }
 .card__date  { font-family: var(--mono); font-size: var(--fs-mini); color: var(--muted); letter-spacing: 0.02em; text-transform: uppercase; }
@@ -365,6 +365,35 @@ main > .section:first-child { margin-top: var(--space-3xl); }
   letter-spacing: -0.02em;
   line-height: 1.05;
 }
+.card__title--link { color: inherit; text-decoration: none; }
+.card__title--link:hover { color: var(--accent); }
+
+/* optional repo link (github/bitbucket/gitea) */
+.card--has-repo::after { content: none; }
+.card__repo {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: currentColor;
+  opacity: 0.55;
+  transition: opacity 180ms var(--ease), background-color 180ms var(--ease), color 180ms var(--ease), transform 220ms var(--ease-strong);
+  z-index: 2;
+}
+.card__repo svg { width: 18px; height: 18px; display: block; }
+.card__repo:hover {
+  opacity: 1;
+  color: var(--accent);
+  background: color-mix(in oklch, var(--accent) 10%, transparent);
+  transform: translateY(-1px);
+}
+.card--featured .card__repo { color: color-mix(in oklch, var(--on-accent) 75%, transparent); opacity: 0.85; top: 1.25rem; right: 1.5rem; }
+.card--featured .card__repo:hover { color: var(--on-accent); background: color-mix(in oklch, var(--on-accent) 16%, transparent); }
 
 /* FEATURED — accent-filled hero card */
 .card--featured {
@@ -711,6 +740,13 @@ main > .section:first-child { margin-top: var(--space-3xl); }
   line-height: 1;
 }
 .foot__right { text-align: right; }
+.foot__edit {
+  margin-left: 0.6em;
+  color: var(--muted);
+  border-bottom: 1px dotted color-mix(in oklch, var(--muted) 50%, transparent);
+  transition: color 180ms var(--ease), border-color 180ms var(--ease);
+}
+.foot__edit:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
 /* reveal */
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity 700ms var(--ease-strong), transform 700ms var(--ease-strong); }

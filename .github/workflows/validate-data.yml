@@ -1,0 +1,39 @@
+name: Validate links data
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/links.json"
+      - "data/links.example.json"
+      - "data/links.schema.json"
+      - ".github/workflows/validate-data.yml"
+  pull_request:
+    paths:
+      - "data/links.json"
+      - "data/links.example.json"
+      - "data/links.schema.json"
+      - ".github/workflows/validate-data.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JSON syntax (jq)
+        run: |
+          set -e
+          for f in data/links.json data/links.example.json data/links.schema.json; do
+            echo "Checking $f"
+            jq empty "$f"
+          done
+
+      - name: Schema validation (ajv)
+        run: |
+          npx --yes ajv-cli@5 validate \
+            --spec=draft2020 \
+            --strict=false \
+            -s data/links.schema.json \
+            -d data/links.json \
+            -d data/links.example.json

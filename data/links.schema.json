@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dlstack/links.schema.json",
+  "title": "dlstack links file",
+  "description": "Content document for a dlstack site. Lives at data/links.json and is fetched at runtime by assets/js/app.js.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile", "sections"],
+  "properties": {
+    "$schema": { "type": "string", "description": "Reference to this schema for editor autocomplete." },
+
+    "profile": {
+      "type": "object",
+      "description": "Hero block at the top of the page.",
+      "additionalProperties": true,
+      "required": ["name"],
+      "properties": {
+        "name":     { "type": "string" },
+        "handle":   { "type": "string" },
+        "tagline":  { "type": "string" },
+        "bio":      { "type": "string" },
+        "location": { "type": "string" },
+        "avatar":   { "type": "string", "description": "Optional avatar image URL." }
+      }
+    },
+
+    "theme": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "accent":   { "type": "string", "description": "Accent color (CSS color, usually hex)." },
+        "template": { "type": "string", "enum": ["editorial", "swiss", "cosmos"] }
+      }
+    },
+
+    "sections": {
+      "type": "array",
+      "description": "Ordered list of content sections.",
+      "items": { "$ref": "#/$defs/section" }
+    },
+
+    "social": {
+      "type": "array",
+      "description": "Pill buttons under the hero bio.",
+      "items": { "$ref": "#/$defs/social" }
+    },
+
+    "footer": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "copy":    { "type": "string", "description": "Left-aligned footer line." },
+        "year":    { "type": "string", "description": "'auto' to use current year, or a fixed string." },
+        "editUrl": { "type": "string", "format": "uri", "description": "Optional 'Edit on GitHub' link, e.g. https://github.com/you/repo/edit/main/data/links.json. When set, an unobtrusive link appears in the footer." }
+      }
+    }
+  },
+
+  "$defs": {
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "items"],
+      "properties": {
+        "id":       { "type": "string" },
+        "label":    { "type": "string" },
+        "kicker":   { "type": "string", "description": "Small line above the section label." },
+        "layout":   { "type": "string", "enum": ["clients", "testimonials"], "description": "Special layout. Omit for the default bento grid." },
+        "headless": { "type": "boolean", "description": "Render section body without the header — useful for chaining a continuation onto the previous section." },
+        "items":    { "type": "array", "items": { "$ref": "#/$defs/item" } }
+      }
+    },
+
+    "item": {
+      "oneOf": [
+        { "$ref": "#/$defs/itemLink" },
+        { "$ref": "#/$defs/itemCard" },
+        { "$ref": "#/$defs/itemYouTube" },
+        { "$ref": "#/$defs/itemPortfolio" },
+        { "$ref": "#/$defs/itemClient" },
+        { "$ref": "#/$defs/itemTestimonial" }
+      ]
+    },
+
+    "date": {
+      "type": "string",
+      "description": "Optional date. Accepts ISO 'YYYY', 'YYYY-MM', 'YYYY-MM-DD', or free-form strings like '1837'.",
+      "pattern": "^.+$"
+    },
+
+    "itemLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "title", "url"],
+      "properties": {
+        "type":        { "const": "link" },
+        "title":       { "type": "string" },
+        "url":         { "type": "string", "format": "uri-reference" },
+        "description": { "type": "string" },
+        "image":       { "type": "string", "description": "Custom logo URL. Overrides the auto-fetched favicon." },
+        "icon":        { "type": "string", "description": "Alias for 'image'." },
+        "featured":    { "type": "boolean" },
+        "date":        { "$ref": "#/$defs/date" }
+      }
+    },
+
+    "itemCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "title"],
+      "properties": {
+        "type":        { "const": "card" },
+        "title":       { "type": "string" },
+        "url":         { "type": "string", "format": "uri-reference", "description": "Primary link. When present, the title becomes a link." },
+        "repo":        { "type": "string", "format": "uri", "description": "Optional secondary link to the project's source repo. Renders a git icon in the corner. Supports github.com, bitbucket.org, and Gitea/self-hosted URLs." },
+        "description": { "type": "string" },
+        "tags":        { "type": "array", "items": { "type": "string" } },
+        "featured":    { "type": "boolean", "description": "Hero card — spans 8/12 columns, fills with accent color." },
+        "date":        { "$ref": "#/$defs/date" }
+      }
+    },
+
+    "itemYouTube": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "title"],
+      "properties": {
+        "type":     { "const": "youtube" },
+        "id":       { "type": "string", "description": "YouTube video ID (the 11-char string after v=)." },
+        "title":    { "type": "string" },
+        "featured": { "type": "boolean", "description": "When true, card spans the wider layout." },
+        "date":     { "$ref": "#/$defs/date" }
+      }
+    },
+
+    "itemPortfolio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "image"],
+      "properties": {
+        "type":        { "const": "portfolio" },
+        "image":       { "type": "string" },
+        "title":       { "type": "string" },
+        "description": { "type": "string" },
+        "url":         { "type": "string", "format": "uri-reference" },
+        "ratio":       { "type": "string", "pattern": "^\\d+\\s*:\\s*\\d+$", "description": "Aspect ratio as 'W:H' (e.g. '16:9', '5:2'). Default '5:2'." },
+        "date":        { "$ref": "#/$defs/date" }
+      }
+    },
+
+    "itemClient": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "title"],
+      "properties": {
+        "type":  { "const": "client" },
+        "title": { "type": "string" },
+        "url":   { "type": "string", "format": "uri-reference" },
+        "image": { "type": "string" },
+        "icon":  { "type": "string", "description": "Alias for 'image'." },
+        "date":  { "$ref": "#/$defs/date" }
+      }
+    },
+
+    "itemTestimonial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "quote"],
+      "properties": {
+        "type":  { "const": "testimonial" },
+        "quote": { "type": "string" },
+        "name":  { "type": "string" },
+        "role":  { "type": "string" },
+        "org":   { "type": "string" },
+        "url":   { "type": "string", "format": "uri-reference" },
+        "image": { "type": "string" },
+        "icon":  { "type": "string", "description": "Alias for 'image'." },
+        "date":  { "$ref": "#/$defs/date" }
+      }
+    },
+
+    "social": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "url"],
+      "properties": {
+        "label": { "type": "string" },
+        "url":   { "type": "string", "format": "uri-reference" },
+        "icon":  { "type": "string", "description": "Icon key (e.g. 'github', 'linkedin', 'mail', 'rss')." }
+      }
+    }
+  }
+}
