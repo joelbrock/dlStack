@@ -712,7 +712,15 @@
       try {
         const res = await fetch(src, { cache: "no-cache" });
         if (!res.ok) { lastErr = new Error(`${src}: HTTP ${res.status}`); continue; }
-        return await res.json();
+        try {
+          return await res.json();
+        } catch (parseErr) {
+          // File loaded but JSON is malformed — surface this loudly instead of
+          // silently falling back to the next source.
+          console.warn(`[dlstack] ${src} loaded but failed to parse — falling back. Fix the JSON to see your content.`, parseErr);
+          lastErr = new Error(`${src}: invalid JSON — ${parseErr.message}`);
+          continue;
+        }
       } catch (err) { lastErr = err; }
     }
     throw lastErr || new Error("No data file found.");
