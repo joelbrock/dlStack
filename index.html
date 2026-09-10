@@ -17,10 +17,6 @@
   <link rel="preconnect" href="https://www.google.com">
   <link rel="preconnect" href="https://i.ytimg.com">
 
-  <!-- Editorial: Fraunces (variable serif) + Geist (refined sans) + Geist Mono
-       Swiss: Archivo (variable grotesque, near-Akzidenz/Univers) -->
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=DM+Serif+Display:ital@0;1&family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..600,30..100,0..1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
-
   <script>
     // Apply saved theme + template before paint to avoid flash.
     // URL ?template=… wins over the cached value so deep links work.
@@ -36,11 +32,41 @@
         if (tpl === "swiss" || tpl === "editorial" || tpl === "cosmos") document.documentElement.dataset.template = tpl;
       }
     } catch (e) {}
+
+    // Load only the active template's stylesheet and font families.
+    // Template switches reload the page (app.js "warp"), so the inactive
+    // templates' CSS and fonts are never needed on this page load.
+    (function () {
+      var tpl = document.documentElement.dataset.template || "editorial";
+      if (tpl === "swiss" || tpl === "cosmos") {
+        var css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = "assets/css/" + tpl + ".css";
+        // Script-inserted sheets don't block paint by default; opt in so the
+        // theme never flashes unstyled where blocking=render is supported.
+        css.setAttribute("blocking", "render");
+        document.head.appendChild(css);
+      }
+      // Editorial: Fraunces (variable serif) + DM Serif Display + Geist + Geist Mono
+      // Swiss: Archivo (variable grotesque, near-Akzidenz/Univers)
+      // Cosmos: Orbitron + Geist + Geist Mono
+      var families = {
+        editorial: "family=DM+Serif+Display:ital@0;1&family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..600,30..100,0..1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500",
+        swiss: "family=Archivo:wght@400;500;600;700;900",
+        cosmos: "family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Orbitron:wght@400;500;700;900"
+      };
+      var fonts = document.createElement("link");
+      fonts.rel = "stylesheet";
+      fonts.href = "https://fonts.googleapis.com/css2?" + (families[tpl] || families.editorial) + "&display=swap";
+      // media=print keeps the request off the critical path; flip to all once
+      // loaded. display=swap means text renders in fallbacks meanwhile.
+      fonts.media = "print";
+      fonts.onload = function () { this.media = "all"; };
+      document.head.appendChild(fonts);
+    })();
   </script>
 
   <link rel="stylesheet" href="assets/css/styles.css">
-  <link rel="stylesheet" href="assets/css/swiss.css">
-  <link rel="stylesheet" href="assets/css/cosmos.css">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Joel Brock — links">
