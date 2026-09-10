@@ -4,7 +4,7 @@ A hand-built, file-driven personal link index. Drop it on any shared host
 via SFTP — no build step, no framework, no database. To update the page,
 edit `data/links.json` and re-upload.
 
-Live at <https://www.joelbrock.org>.
+Live at <https://dlstack-demo.pages.dev/>.
 
 ## Setup
 
